@@ -40,6 +40,9 @@ SYSTEM_APPS = [
 ]
 
 DEVELOPED_APPS = [
+    'core.apps.CoreConfig',
+    'accounts.apps.AccountsConfig',
+    'accounts.apps.QaConfig',
 ]
 
 THIRD_PARTY_APPS = [
