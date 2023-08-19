@@ -1,2 +1,2 @@
-# question-builder
-an open-source question builder application
+# Question Builder
+An open-source survey builder web application.
