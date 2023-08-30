@@ -1,7 +1,8 @@
 from django.db import models
-from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin
+from core.models import SoftDeleteModel
 from django.utils.translation import gettext_lazy as _
 from uuid import uuid4
+from django.db.models import Manager
 
 class VisitorAnswer(SoftDeleteModel):
     visitor_id = models.UUIDField(
@@ -18,10 +19,15 @@ class VisitorAnswer(SoftDeleteModel):
         on_delete=models.CASCADE, 
         related_name='answers')
     
-    answer = models.JSONField(verbose_name=_("Answer"))
+    answer = models.JSONField(
+        verbose_name=_("Answer"))
     
     def __str__(self) -> str:
         return self.id
-    
 
     
+class VisitorAnswerRecycle(VisitorAnswer):
+    objects = Manager()
+    
+    class Meta:
+        proxy = True
