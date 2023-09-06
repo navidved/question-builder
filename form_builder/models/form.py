@@ -3,41 +3,59 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from datetime import datetime
-from core.models import (SoftDeleteModel,
+from core.models import (BaseModel,
+                         SoftDeleteModel,
                          CreatedAtStampMixin,
                          UpdatedAtStampMixin,
                          )
-# from form_builder.models.tag import Tag
-# from form_builder.models.category import Category
+from form_builder.models import Tag
+from form_builder.models import Category
 
 
 class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
-    start_date = models.DateTimeField(default=datetime.now())
-    end_date = models.DateTimeField(default=datetime.now())
+    title = models.CharField(
+        verbose_name=_("Title"),
+        max_length=255,
+        )
+    start_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        default=datetime.now(),
+        )
+    end_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        default=datetime.now(),
+        )
 
-    file = models.FileField(upload_to="/form-files/")
-    background_image = models.FileField(upload_to="/form-background-image")
+    file = models.UUIDField(
+        blank=True,
+        null=True,
+    )
+    background_image = models.UUIDField(
+        blank=True,
+        null=True,
+    )
 
     user = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='FormUser',
     )
 
-    tag = models.ForeignKey(
-        "Tag",
-        on_delete=models.CASCADE,
-        related_name="forms",
+    tag = models.ManyToManyField(
+        Tag,
+        through='FormTag',
     )
 
     category = models.ForeignKey(
-        "Category",
+        Category,
         verbose_name=_("Category"),
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="forms",
     )
 
 
-class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
+class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -48,4 +66,19 @@ class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
         Form,
         on_delete=models.CASCADE,
         related_name="form_users",
+        )
+
+
+class FormTag(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
+
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        related_name="tag_forms",
+        )
+
+    form = models.ForeignKey(
+        Form,
+        on_delete=models.CASCADE,
+        related_name="form_tags",
         )
