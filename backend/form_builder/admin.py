@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-
 from form_builder.models import Form, FormUser
 from models.visitor_answer import VisitorAnswer, VisitorAnswerRecycle
+from models.visitor import Visitor
 
 
 class FormUserInLine(admin.StackedInline):
@@ -89,3 +89,10 @@ class VisitorAnswerAdmin(admin.ModelAdmin):
         Activate the selected answers.
         """
         queryset.update(is_active=True)
+
+
+@admin.register(Visitor)
+class VsitorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'auth_type','auth_value')
+    search_fields = ('auth_value',)
+    list_filter = ('auth_value',)
