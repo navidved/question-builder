@@ -4,6 +4,7 @@ from models.category import CategoryModel
 from form_builder.models import Form, FormUser
 from models.visitor_answer import VisitorAnswer, VisitorAnswerRecycle
 from models.visitor import Visitor
+from models.tag import TagModel
 
 
 class FormUserInLine(admin.StackedInline):
@@ -104,3 +105,11 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'created_at']
     list_filter = ['title', 'created_at']
     search_fields = ['title', 'description']
+
+
+@admin.register(TagModel)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'title', 'created_at']
+    list_filter = ['title', 'created_at']
+    search_fields = ['title', 'description']
+
