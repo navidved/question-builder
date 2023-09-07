@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from models.category import CategoryModel
 from form_builder.models import Form, FormUser
 from models.visitor_answer import VisitorAnswer, VisitorAnswerRecycle
 from models.visitor import Visitor
@@ -96,3 +97,10 @@ class VsitorAdmin(admin.ModelAdmin):
     list_display = ('id', 'auth_type','auth_value')
     search_fields = ('auth_value',)
     list_filter = ('auth_value',)
+
+    
+@admin.register(CategoryModel)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'title', 'created_at']
+    list_filter = ['title', 'created_at']
+    search_fields = ['title', 'description']
