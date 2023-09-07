@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from models.category import CategoryModel
 from form_builder.models import Form, FormUser
 from models.visitor_answer import VisitorAnswer, VisitorAnswerRecycle
+from models.visitor import Visitor
 
 
 class FormUserInLine(admin.StackedInline):
@@ -91,6 +92,13 @@ class VisitorAnswerAdmin(admin.ModelAdmin):
         queryset.update(is_active=True)
 
 
+@admin.register(Visitor)
+class VsitorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'auth_type','auth_value')
+    search_fields = ('auth_value',)
+    list_filter = ('auth_value',)
+
+    
 @admin.register(CategoryModel)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'created_at']
