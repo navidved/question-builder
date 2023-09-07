@@ -1,6 +1,7 @@
 import random
 from datetime import datetime
 from django.db import models
+from django.utils import timezone
 from django.conf import settings
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -28,7 +29,7 @@ class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
 
     start_date = models.DateTimeField(
         verbose_name=_("Start date and time"),
-        default=datetime.now(),
+        default=timezone.now,
         )
 
     end_date = models.DateTimeField(
