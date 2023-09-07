@@ -102,13 +102,12 @@ class VsitorAdmin(admin.ModelAdmin):
 @admin.register(CategoryModel)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'created_at']
-    list_filter = ['title', 'created_at']
+    list_filter = ['title']
     search_fields = ['title', 'description']
 
 
 @admin.register(TagModel)
 class TagAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'created_at']
-    list_filter = ['title', 'created_at']
+    list_filter = ['title']
     search_fields = ['title', 'description']
-
