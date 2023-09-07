@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from backend.core.models import BaseModel, CreatedAtStampMixin
+from core.models import BaseModel, CreatedAtStampMixin
 
 
 class TagModel(BaseModel, CreatedAtStampMixin):
