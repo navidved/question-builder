@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
-from backend.core.models import BaseModel
-from backend.core.custom_manager import CustomManager
+from core.models import BaseModel
+from core.custom_manager import CustomManager
 
 
 class SoftDeleteModel(BaseModel):

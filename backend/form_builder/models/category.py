@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from backend.core.models.base_model import BaseModel, CreatedAtStampMixin
+from core.models.base_model import BaseModel, CreatedAtStampMixin
 
 
 class CategoryModel(BaseModel, CreatedAtStampMixin):

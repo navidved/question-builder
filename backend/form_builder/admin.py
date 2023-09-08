@@ -1,25 +1,24 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from models.category import CategoryModel
-from form_builder.models import Form, FormUser
-from models.visitor_answer import VisitorAnswer, VisitorAnswerRecycle
-from models.visitor import Visitor
-from models.tag import TagModel
+
+from .models import CategoryModel
+from .models import TagModel
+from .models import Form, FormUser, FormTag
+from .models import Visitor
+from .models import VisitorAnswer, VisitorAnswerRecycle
 
 
 class FormUserInLine(admin.StackedInline):
     model = FormUser
     fields = (
-        "is_active"
         "form",
         "user",
     )
 
 
 class FormTagInLine(admin.StackedInline):
-    model = FormUser
+    model = FormTag
     fields = (
-        "is_active"
         "form",
         "tag",
     )
@@ -28,34 +27,34 @@ class FormTagInLine(admin.StackedInline):
 # Reza
 @admin.register(Form)
 class FormAdmin(admin.ModelAdmin):
-    list_select_related = ["user", "tag", "category"]
-    list_display = ("is_active",
-                    "id",
-                    "title",
-                    "start_date",
-                    "end_date",
-                    "category",
-                    "created_at",
-                    "updated_at",
-                    )
-
-    list_display_links = ("title", "start_date", "end_date", "category")
-    list_filter = ('is_active')
-    ordering = ("-created_at", "updated_at")
-    date_hierarchy = "created_at"
-    readonly_fields = ('created_at', 'updated_at')
 
     inlines = (FormUserInLine, FormTagInLine)
 
-    add_fieldsets = (
-        (None, {"fields": ("title",)}),
+    list_display = (
+        "id",
+        "is_active",
+        "category",
+        "slug",
+        "title",
+        "start_date",
+        "end_date",
         )
 
-    fieldsets = (
-        (None, {"fields": ("title",)}),
-        (_("Duration"), {"fields": ("start_date", "end_date")}),
-        (_("Category"), {"fields": ("category")}),
-    )
+    list_display_links = (
+        "category",
+        "slug",
+        "title",
+        "start_date",
+        "end_date"
+        )
+    list_filter = ('is_active',)
+    readonly_fields = ('created_at', 'updated_at')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).\
+            select_related('category').\
+            prefetch_related('users').\
+            prefetch_related('tags')
 
 
 # Registering models
@@ -103,13 +102,12 @@ class VsitorAdmin(admin.ModelAdmin):
 @admin.register(CategoryModel)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'created_at']
-    list_filter = ['title', 'created_at']
+    list_filter = ['title']
     search_fields = ['title', 'description']
 
 
 @admin.register(TagModel)
 class TagAdmin(admin.ModelAdmin):
     list_display = ['pk', 'title', 'created_at']
-    list_filter = ['title', 'created_at']
+    list_filter = ['title']
     search_fields = ['title', 'description']
-
