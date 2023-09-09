@@ -21,6 +21,14 @@ class AccountAdmin(UserAdmin):
         'is_staff',
         'is_active',
         ]
+    list_display_links = [
+        'id',
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        ]
+
     list_filter = [
         'username',
         'email',
@@ -77,6 +85,13 @@ class AccountAdmin(admin.ModelAdmin):
         'is_staff',
         'is_active',
     ]
+    list_display_links = [
+        'id',
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        ]
     list_filter = [
         'username',
         'email',
