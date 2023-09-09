@@ -83,6 +83,9 @@ class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
             self.slug = slugify(combined)
         return super().save(*args, **kwargs)
 
+    def __str__(self):
+        return self.title
+
 
 class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
 

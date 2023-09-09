@@ -17,5 +17,5 @@ class Visitor(CreatedAtStampMixin, BaseModel):
         max_length=20)
 
     def __str__(self) -> str:
-        return self.id
+        return str(self.id)
     
