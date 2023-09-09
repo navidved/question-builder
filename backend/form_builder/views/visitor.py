@@ -3,9 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
-from backend.form_builder.serializers.visitor import FormSerializer, VisitorSerializer
+from backend.form_builder.serializers.visitor import FormSerializer, VisitorSerializer, VisitorAnswersSerializer
 from backend.form_builder.models.form import Form
 from backend.form_builder.models.visitor import Visitor
+from backend.form_builder.models.visitor_answer import VisitorAnswer
 
 
 class GettingFormToAnswerView(APIView):
@@ -28,6 +29,25 @@ class VisitorAuthenticationView(APIView):
 
         visitor_srz = VisitorSerializer(instance=visitor)
         return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
+
+
+class AddVisitorAnswer(APIView):
+    def post(self, request: Request):
+        visitor_answer = VisitorAnswer.objects.filter(
+            form=request.data['form_id'],
+            form_item=request.data['form_item_id'],
+            visitor_id=request.data['visitor_id'],
+        )
+
+        if not visitor_answer:
+            visitor_answer_srz = VisitorAnswersSerializer(data=request.data)
+            if visitor_answer_srz.is_valid():
+                visitor_answer_srz.create(validated_data=visitor_answer_srz.validated_data)
+                return Response(data=visitor_answer_srz.data, status=status.HTTP_201_CREATED)
+            return Response(data=visitor_answer_srz.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        visitor_answer_srz = VisitorAnswersSerializer(instance=VisitorAnswer)
+        return Response(data=visitor_answer_srz.data, status=status.HTTP_200_OK)
 
 
 
