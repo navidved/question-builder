@@ -3,9 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
-from backend.form_builder.serializers.visitor import FormSerializer, VisitorSerializer
+from backend.form_builder.serializers.visitor import (
+    FormSerializer,
+    VisitorSerializer,
+    VisitorAnswersSerializer,
+)
 from backend.form_builder.models.form import Form
 from backend.form_builder.models.visitor import Visitor
+from backend.form_builder.models.visitor_answer import VisitorAnswer
 
 
 class GettingFormToAnswerView(APIView):
@@ -17,8 +22,9 @@ class GettingFormToAnswerView(APIView):
 
 class VisitorAuthenticationView(APIView):
     def post(self, request: Request):
-        visitor = Visitor.objects.get(form_id=request.data['form_id'],
-                                      auth_value=request.data['auth_value'])
+        visitor = Visitor.objects.get(
+            form_id=request.data["form_id"], auth_value=request.data["auth_value"]
+        )
         if not visitor:
             visitor_srz = VisitorSerializer(data=request.data)
             if visitor_srz.is_valid():
@@ -30,10 +36,14 @@ class VisitorAuthenticationView(APIView):
         return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
 
 
-
-
-
-
-
-
-
+class AnswerUpdateView(APIView):
+    def patch(self, request: Request, visitoranswer_id):
+        answer = get_object_or_404(VisitorAnswer, id=visitoranswer_id)
+        answer_srz = VisitorAnswersSerializer(
+            instance=answer, data=request.data, partial=True
+        )
+        if answer_srz.is_valid():
+            answer_srz.save()
+            data = {"message": "Answer Updated successfully.", "data": answer_srz.data}
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(answer_srz.errors, status=status.HTTP_400_BAD_REQUEST)
