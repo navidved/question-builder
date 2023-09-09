@@ -1,11 +1,11 @@
 from django.db import models
-from backend.core.models import (
+from core.models import (
     SoftDeleteModel,
     CreatedAtStampMixin,
     UpdatedAtStampMixin,
 )
 from django.utils.translation import gettext_lazy as _
-from backend.form_builder.models import form
+from form_builder.models import Form
 
 
 class FormItem(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
@@ -22,7 +22,7 @@ class FormItem(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
         (0, "Not Required"),
         (1, "Required"),
     ]
-    form = models.ForeignKey(form, verbose_name=_("form"), on_delete=models.CASCADE)
+    form = models.ForeignKey(Form, verbose_name=_("form"), on_delete=models.CASCADE)
     answer_type = models.CharField(
         max_length=2,
         choices=ANSWER_TYPE_CHOICES,

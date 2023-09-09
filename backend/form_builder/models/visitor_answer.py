@@ -24,7 +24,7 @@ class VisitorAnswer(SoftDeleteModel):
         verbose_name=_("Answer"))
 
     def __str__(self) -> str:
-        return self.answer
+        return str(self.answer)
 
 
 class VisitorAnswerRecycle(VisitorAnswer):

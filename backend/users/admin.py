@@ -33,8 +33,6 @@ class AccountAdmin(UserAdmin):
                 "first_name",
                 "last_name",
                 "email",
-                'image',
-                'bio',
             )}),
         (
             _("Permissions"),
