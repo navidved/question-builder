@@ -2,12 +2,12 @@ from rest_framework import serializers
 from backend.form_builder.models import (Visitor,
                                          VisitorAnswer,
                                          Form,
-                                         FormItemModel)
+                                         FormItem)
 
 
 class FormItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FormItemModel
+        model = FormItem
         fields = '__all__'
 
 
