@@ -39,6 +39,7 @@ DEVELOPED_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'django_json_widget',
+    'drf_yasg',
 ]
 
 

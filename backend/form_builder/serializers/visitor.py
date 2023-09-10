@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from backend.form_builder.models import (Visitor,
-                                         VisitorAnswer,
-                                         Form,
-                                         FormItem)
+from form_builder.models import (
+    Visitor,
+    VisitorAnswer,
+    Form,
+    FormItem
+    )
 
 
 class FormItemSerializer(serializers.ModelSerializer):
