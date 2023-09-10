@@ -6,7 +6,6 @@ from django_json_widget.widgets import JSONEditorWidget
 
 from .models import (
     Category,
-    CategoryRecycle,
     Tag,
     TagRecycle,
     Form,
@@ -109,6 +108,12 @@ class FormAdmin(admin.ModelAdmin):
         (_("Others"), {"fields": ("file_name", "image_name")}),
     )
 
+    def get_queryset(self, request):
+        """
+        Returns a queryset of inactive Form objects.
+        """
+        return FormRecycle.objects.filter(is_active=False)
+
     @admin.action(description="Activate selected forms")
     def activate_form(self, request, queryset):
         """
@@ -126,6 +131,7 @@ class FormItemAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "form",
+        "answer_type",
         "description",
         "time_limit",
     )
@@ -156,6 +162,7 @@ class FormItemAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "form",
+        "answer_type",
         "description",
         "time_limit",
     )
@@ -176,6 +183,12 @@ class FormItemAdmin(admin.ModelAdmin):
         (_("Othes"), {"fields": ("time_limit", "file_name")}),
     )
 
+    def get_queryset(self, request):
+        """
+        Returns a queryset of inactive FormItem objects.
+        """
+        return FormItemRecycle.objects.filter(is_active=False)
+
     @admin.action(description="Activate selected form items")
     def activate_form_item(self, request, queryset):
         """
@@ -193,11 +206,11 @@ class VisitorAnswerAdmin(admin.ModelAdmin):
 
     list_display = ("form", "form_item", "answer")
     list_display_links = ("form", "form_item", "answer")
-    search_fields = ("form_item__text", "visitor_id")
+    search_fields = ("form_item__text", "visitor")
     list_filter = ("form_item",)
 
     fieldsets = (
-        (_("Required"), {"fields": ("visitor_id", "form", "form_item")}),
+        (_("Required"), {"fields": ("visitor", "form", "form_item")}),
         (_("Answer"), {"fields": ("answer",)}),
     )
 
@@ -206,7 +219,7 @@ class VisitorAnswerAdmin(admin.ModelAdmin):
 class VisitorAnswerAdmin(admin.ModelAdmin):
     list_display = ("form", "form_item", "answer")
     list_display_links = ("form", "form_item", "answer")
-    search_fields = ("form_item__text", "visitor_id")
+    search_fields = ("form_item__text", "visitor")
     list_filter = ("form_item",)
     actions = ("activate_visitoranswer",)
 
@@ -239,6 +252,12 @@ class VsitorAdmin(admin.ModelAdmin):
     search_fields = ("auth_value",)
     list_filter = ("auth_value",)
 
+    def get_queryset(self, request):
+        """
+        Returns a queryset of inactive Visitor objects.
+        """
+        return VisitorRecycle.objects.filter(is_active=False)
+
     @admin.action(description="Activate selected visitors")
     def activate_visitor(self, request, queryset):
         """
@@ -255,22 +274,6 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["title", "description"]
 
 
-@admin.register(CategoryRecycle)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ["pk", "title", "created_at"]
-    list_display_links = ["pk", "title", "created_at"]
-    list_filter = ["title"]
-    search_fields = ["title", "description"]
-    actions = ("activate_category",)
-
-    @admin.action(description="Activate selected categories")
-    def activate_category(self, request, queryset):
-        """
-        Activate selected category.
-        """
-        queryset.update(is_active=True)
-
-
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ["pk", "title", "created_at"]
@@ -285,6 +288,12 @@ class TagAdmin(admin.ModelAdmin):
     list_display_links = ["pk", "title", "created_at"]
     list_filter = ["title"]
     search_fields = ["title", "description"]
+
+    def get_queryset(self, request):
+        """
+        Returns a queryset of inactive Tag objects.
+        """
+        return TagRecycle.objects.filter(is_active=False)
 
     @admin.action(description="Activate selected tags")
     def activate_tag(self, request, queryset):

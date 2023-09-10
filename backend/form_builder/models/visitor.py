@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.models import BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin
+from form_builder.models import Form
 
 
 class Visitor(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
@@ -19,6 +20,12 @@ class Visitor(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         blank=True,
         null=True,
     )
+
+    form = models.ForeignKey(
+        Form,
+        verbose_name=_("Form"),
+        on_delete=models.CASCADE
+        )
 
     def __str__(self):
         return str(self.id)

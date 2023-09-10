@@ -6,7 +6,10 @@ from core.models.base_model import BaseModel, CreatedAtStampMixin
 
 class Category(BaseModel, CreatedAtStampMixin):
     title = models.CharField(
-        verbose_name=_("Title"), max_length=100, help_text=_("Please Enter title")
+        unique=True,
+        verbose_name=_("Title"),
+        max_length=100,
+        help_text=_("Please Enter title"),
     )
     description = models.TextField(
         verbose_name=_("Description"), help_text=_("Please Enter description")
@@ -18,10 +21,3 @@ class Category(BaseModel, CreatedAtStampMixin):
 
     def __str__(self):
         return self.title
-
-
-class CategoryRecycle(Category):
-    objects = models.Manager()
-
-    class Meta:
-        proxy = True
