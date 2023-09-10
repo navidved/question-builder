@@ -20,8 +20,8 @@ class VisitorAnswer(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         "text": "visitor-answer-text",
     }
 
-    visitor_id = models.ForeignKey(
-        "form_builder.Visitor", on_delete=models.CASCADE, related_name="answers"
+    visitor = models.ForeignKey(
+        "form_builder.Visitor", on_delete=models.CASCADE, related_name="visitor_answers"
     )
 
     form = models.ForeignKey(

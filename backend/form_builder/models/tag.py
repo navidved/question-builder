@@ -5,7 +5,10 @@ from core.models import BaseModel, CreatedAtStampMixin
 
 class Tag(BaseModel, CreatedAtStampMixin):
     title = models.CharField(
-        verbose_name=_("Title"), max_length=100, help_text=_("Please enter title")
+        unique=True,
+        verbose_name=_("Title"),
+        max_length=100,
+        help_text=_("Please enter title"),
     )
     description = models.TextField(
         verbose_name=_("Description"), help_text=_("Please enter description")

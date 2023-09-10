@@ -10,34 +10,32 @@ from form_builder.models import (
 class FormItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormItem
-        fields = '__all__'
+        fields = "__all__"
 
 
 class FormSerializer(serializers.ModelSerializer):
-    form_items = serializers.SerializerMethodField()
+
+    form_items = FormItemSerializer(many=True)
 
     class Meta:
         model = Form
-        fields = '__all__'
-
-    def get_form_items(self, obj):
-        form_items = obj.form_items.all()
-        return FormItemSerializer(instance=form_items, many=True)
+        fields = "__all__"
 
 
 class VisitorAnswersSerializer(serializers.ModelSerializer):
     class Meta:
         model = VisitorAnswer
-        field = '__all__'
+        fields = '__all__'
 
 
 class VisitorSerializer(serializers.ModelSerializer):
-    visitor_answers = serializers.SerializerMethodField()
+    visitor_answers = VisitorAnswersSerializer(many=True, read_only=True)
 
     class Meta:
         model = Visitor
-        fields = '__all__'
-
-    def get_visitor_answers(self, obj):
-        visitor_answers = obj.visitor_answers.all()
-        return VisitorAnswersSerializer(instance=visitor_answers, many=True)
+        fields = [
+            'auth_type',
+            'auth_value',
+            'form',
+            'visitor_answers',
+        ]
