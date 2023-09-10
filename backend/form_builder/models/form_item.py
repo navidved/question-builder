@@ -1,14 +1,25 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 from core.models import (
     SoftDeleteModel,
     CreatedAtStampMixin,
     UpdatedAtStampMixin,
 )
-from django.utils.translation import gettext_lazy as _
 from form_builder.models import Form
 
 
 class FormItem(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
+    default_options = {
+        "multi-choice": [
+            "string",
+        ],
+        "radio-button": [
+            "string",
+        ],
+        "text": "placeholder",
+    }
+
     RADIOBUTTON = "RB"
     MULTICHECK = "MC"
     TEXT = "TX"
@@ -43,7 +54,7 @@ class FormItem(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
         blank=True,
         null=True,
     )
-    options = models.JSONField(verbose_name=_("options"))
+    options = models.JSONField(verbose_name=_("options"), default=default_options)
     order = models.PositiveIntegerField(verbose_name=_("order"))
     answer_condition = models.PositiveIntegerField(
         verbose_name=_("answer condition"), choices=ANSWER_CONDITION_CHOICES, default=0
@@ -51,3 +62,17 @@ class FormItem(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
     time_limit = models.PositiveIntegerField(
         verbose_name=_("time limit"), blank=True, null=True
     )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name, verbose_name_plural = _("Form Item"), _("Form Items")
+        db_table = "FormItem"
+
+
+class FormItemRecycle(FormItem):
+    objects = models.Manager()
+
+    class Meta:
+        proxy = True

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Manager
 
 from core.models import SoftDeleteModel
@@ -36,6 +36,8 @@ class Account(AbstractUser, SoftDeleteModel):
                 ],
             ),
         ]
+        verbose_name, verbose_name_plural = _('Account'), _('Accounts')
+        db_table = 'Account'
 
 
 class AccountRecycle(Account):

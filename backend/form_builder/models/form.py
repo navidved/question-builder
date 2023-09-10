@@ -1,42 +1,40 @@
 import random
-from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from core.models import (BaseModel,
-                         SoftDeleteModel,
-                         CreatedAtStampMixin,
-                         UpdatedAtStampMixin,
-                         )
-from form_builder.models import TagModel
-from form_builder.models import CategoryModel
+from core.models import (
+    BaseModel,
+    SoftDeleteModel,
+    CreatedAtStampMixin,
+    UpdatedAtStampMixin,
+)
+from form_builder.models import Tag, Category
 
 
 class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
+    title = models.CharField(verbose_name=_("Title"), max_length=255)
+
+    description = models.TextField(_("Description"), blank=True, null=True)
 
     slug = models.SlugField(
         verbose_name=_("Slug"),
         unique=True,
         max_length=55,
-        )
-
-    title = models.CharField(verbose_name=_("Title"), max_length=255)
-
-    description = models.TextField(_("Description"), blank=True, null=True)
+    )
 
     start_date = models.DateTimeField(
         verbose_name=_("Start date and time"),
         default=timezone.now,
-        )
+    )
 
     end_date = models.DateTimeField(
         verbose_name=_("End date and time"),
         blank=True,
         null=True,
-        )
+    )
 
     file_name = models.UUIDField(
         verbose_name=_("File name"),
@@ -54,22 +52,22 @@ class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
         verbose_name=_("Time limit in second"),
         blank=True,
         null=True,
-        )
+    )
 
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         verbose_name=_("Users"),
-        through='FormUser',
+        through="FormUser",
     )
 
     tags = models.ManyToManyField(
-        TagModel,
+        Tag,
         verbose_name=_("Tags"),
-        through='FormTag',
+        through="FormTag",
     )
 
     category = models.ForeignKey(
-        CategoryModel,
+        Category,
         verbose_name=_("Category"),
         on_delete=models.PROTECT,
         related_name="forms",
@@ -86,30 +84,47 @@ class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name, verbose_name_plural = _("Form"), _("Forms")
+        db_table = "Form"
+
 
 class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
-
     form = models.ForeignKey(
         Form,
         on_delete=models.CASCADE,
-        )
+    )
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="forms",
-        )
+    )
+
+    class Meta:
+        verbose_name, verbose_name_plural = _("Form user"), _("Form users")
+        db_table = "FormUser"
 
 
 class FormTag(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
-
     form = models.ForeignKey(
         Form,
         on_delete=models.CASCADE,
-        )
+    )
 
     tag = models.ForeignKey(
-        TagModel,
+        Tag,
         on_delete=models.CASCADE,
         related_name="forms",
-        )
+    )
+
+    class Meta:
+        verbose_name, verbose_name_plural = _("Form Tag"), _("Form Tags")
+        db_table = "FormTag"
+
+
+class FormRecycle(Form):
+    objects = models.Manager()
+
+    class Meta:
+        proxy = True
