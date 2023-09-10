@@ -9,7 +9,7 @@ from core.models import (
 from form_builder.models import Form
 
 
-class FormItem(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
+class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     default_options = {
         "multi-choice": [
             "string",
