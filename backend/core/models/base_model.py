@@ -13,7 +13,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class CreatedAtStampMixin:
+class CreatedAtStampMixin(models.Model):
     """
     Mixin class to add a created_at field to a model.
     """
@@ -22,8 +22,11 @@ class CreatedAtStampMixin:
         auto_now_add=True,
     )
 
+    class Meta:
+        abstract = True
 
-class UpdatedAtStampMixin:
+
+class UpdatedAtStampMixin(models.Model):
     """
     Mixin class to add an updated_at field to a model.
     """
@@ -31,3 +34,6 @@ class UpdatedAtStampMixin:
         verbose_name=_('updated_at'),
         auto_now=True,
     )
+
+    class Meta:
+        abstract = True

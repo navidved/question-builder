@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.models import BaseModel, CreatedAtStampMixin
+from core.models import BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin
 
 
-class Visitor(CreatedAtStampMixin, BaseModel):
+class Visitor(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     AUTHENTICATION_CHOICES = [
         ("AN", "Anonymous"),
         ("EM", "Email"),

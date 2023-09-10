@@ -1,10 +1,11 @@
 from django.db import models
-from core.models import SoftDeleteModel
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Manager
 
+from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin
 
-class VisitorAnswer(SoftDeleteModel):
+
+class VisitorAnswer(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     default_answers = {
         "multi-choice": [
             "choice-1",

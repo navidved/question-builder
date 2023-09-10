@@ -3,11 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Manager
 
-from core.models import SoftDeleteModel
+from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin
 from core.custom_manager import AccountCustomManager
 
 
-class Account(AbstractUser, SoftDeleteModel):
+class Account(AbstractUser, SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     """
     This model represents user accounts in the system.
     """

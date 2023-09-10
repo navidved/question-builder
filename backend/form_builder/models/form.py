@@ -14,7 +14,7 @@ from core.models import (
 from form_builder.models import Tag, Category
 
 
-class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
+class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     title = models.CharField(verbose_name=_("Title"), max_length=255)
 
     description = models.TextField(_("Description"), blank=True, null=True)
@@ -89,7 +89,7 @@ class Form(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
         db_table = "Form"
 
 
-class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
+class FormUser(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     form = models.ForeignKey(
         Form,
         on_delete=models.CASCADE,
@@ -106,7 +106,7 @@ class FormUser(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
         db_table = "FormUser"
 
 
-class FormTag(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
+class FormTag(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     form = models.ForeignKey(
         Form,
         on_delete=models.CASCADE,
