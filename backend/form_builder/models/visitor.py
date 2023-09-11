@@ -21,22 +21,28 @@ class Visitor(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         null=True,
     )
 
-    form = models.ForeignKey(
+    form = models.ManyToManyField(
         Form,
         verbose_name=_("Form"),
-        on_delete=models.CASCADE
-        )
+        through="VisitorForm",
+    )
 
     def __str__(self):
-        return str(self.id)
+        return str(self.auth_value)
 
     class Meta:
         verbose_name, verbose_name_plural = _("Visitor"), _("Visitors")
         db_table = "Visitor"
 
 
-class VisitorRecycle(Visitor):
-    objects = models.Manager()
+class VisitorForm(BaseModel, CreatedAtStampMixin):
+    visitor = models.ForeignKey(
+        Visitor, verbose_name=_("Visitor"), on_delete=models.CASCADE
+    )
+
+    form = models.ForeignKey(Form, verbose_name=_("Form"), on_delete=models.CASCADE)
 
     class Meta:
-        proxy = True
+        verbose_name, verbose_name_plural = _("Visitor form"), _("Visitor forms")
+        db_table = "VisitorForm"
+        unique_together = ("visitor", "form")

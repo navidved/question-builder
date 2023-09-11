@@ -12,7 +12,10 @@ class Category(BaseModel, CreatedAtStampMixin):
         help_text=_("Please Enter title"),
     )
     description = models.TextField(
-        verbose_name=_("Description"), help_text=_("Please Enter description")
+        verbose_name=_("Description"),
+        help_text=_("Please Enter description"),
+        blank=True,
+        null=True,
     )
 
     class Meta:

@@ -7,17 +7,9 @@ from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixi
 
 class VisitorAnswer(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     default_answers = {
-        "multi-choice": [
-            "choice-1",
-            "choice-2",
-            "etc.",
-        ],
-        "radio-button": [
-            "choice-1",
-            "choice-2",
-            "etc.",
-        ],
-        "text": "visitor-answer-text",
+        "multi-choice": None,
+        "radio-button": None,
+        "text": None,
     }
 
     visitor = models.ForeignKey(
@@ -43,6 +35,7 @@ class VisitorAnswer(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     class Meta:
         verbose_name, verbose_name_plural = _("Visitor answer"), _("Visitor answers")
         db_table = "VisitorAnswer"
+        unique_together = ("visitor", "form", "form_item", "answer")
 
 
 class VisitorAnswerRecycle(VisitorAnswer):

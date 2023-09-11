@@ -89,7 +89,7 @@ class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         db_table = "Form"
 
 
-class FormUser(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
+class FormUser(BaseModel, CreatedAtStampMixin):
     form = models.ForeignKey(
         Form,
         on_delete=models.CASCADE,
@@ -104,23 +104,26 @@ class FormUser(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     class Meta:
         verbose_name, verbose_name_plural = _("Form user"), _("Form users")
         db_table = "FormUser"
+        unique_together = ("form", "user")
 
 
-class FormTag(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
+class FormTag(BaseModel, CreatedAtStampMixin):
     form = models.ForeignKey(
         Form,
         on_delete=models.CASCADE,
+        related_name='form_tags'
     )
 
     tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
-        related_name="forms",
+        related_name="tag_forms",
     )
 
     class Meta:
-        verbose_name, verbose_name_plural = _("Form Tag"), _("Form Tags")
+        verbose_name, verbose_name_plural = _("Form tag"), _("Form tags")
         db_table = "FormTag"
+        unique_together = ("form", "tag")
 
 
 class FormRecycle(Form):

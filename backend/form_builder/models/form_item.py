@@ -11,13 +11,9 @@ from form_builder.models import Form
 
 class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     default_options = {
-        "multi-choice": [
-            "string",
-        ],
-        "radio-button": [
-            "string",
-        ],
-        "text": "placeholder",
+        "multi-choice": None,
+        "radio-button": None,
+        "text": None,
     }
 
     RADIOBUTTON = "RB"
@@ -33,7 +29,12 @@ class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         (0, "Not Required"),
         (1, "Required"),
     ]
-    form = models.ForeignKey(Form, verbose_name=_("form"), related_name='form_items', on_delete=models.CASCADE)
+    form = models.ForeignKey(
+        Form,
+        verbose_name=_("form"),
+        related_name="form_items",
+        on_delete=models.CASCADE,
+    )
     answer_type = models.CharField(
         max_length=2,
         choices=ANSWER_TYPE_CHOICES,
@@ -69,7 +70,7 @@ class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     class Meta:
         verbose_name, verbose_name_plural = _("Form Item"), _("Form Items")
         db_table = "FormItem"
-        unique_together = ('form', 'order')
+        unique_together = ("form", "order")
 
 
 class FormItemRecycle(FormItem):
