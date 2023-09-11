@@ -11,7 +11,10 @@ class Tag(BaseModel, CreatedAtStampMixin):
         help_text=_("Please enter title"),
     )
     description = models.TextField(
-        verbose_name=_("Description"), help_text=_("Please enter description")
+        verbose_name=_("Description"),
+        help_text=_("Please enter description"),
+        blank=True,
+        null=True,
     )
 
     class Meta:
@@ -20,10 +23,3 @@ class Tag(BaseModel, CreatedAtStampMixin):
 
     def __str__(self):
         return self.title
-
-
-class TagRecycle(Tag):
-    objects = models.Manager()
-
-    class Meta:
-        proxy = True
