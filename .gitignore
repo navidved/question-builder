@@ -161,3 +161,7 @@ cython_debug/
 .idea/
 
 00*.py
+
+
+frontend/.vite/
+frontend/node_modules/
