@@ -5,7 +5,7 @@ from core.models import BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin
 from form_builder.models import Form
 
 
-class Visitor(BaseModel, CreatedAtStampMixin, UpdatedAtStampMixin):
+class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
     AUTHENTICATION_CHOICES = [
         ("AN", "Anonymous"),
         ("EM", "Email"),
