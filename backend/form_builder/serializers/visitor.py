@@ -10,7 +10,7 @@ from form_builder.models import (
 class FormItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormItem
-        fields = ('default_options', )
+        fields = "__all__"
 
 
 class FormSerializer(serializers.ModelSerializer):
