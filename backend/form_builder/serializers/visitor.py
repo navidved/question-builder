@@ -25,7 +25,12 @@ class FormSerializer(serializers.ModelSerializer):
 class VisitorAnswersSerializer(serializers.ModelSerializer):
     class Meta:
         model = VisitorAnswer
-        fields = '__all__'
+        fields = [
+            'visitor',
+            'form',
+            'form_item',
+            'answer'
+        ]
 
 
 class VisitorSerializer(serializers.ModelSerializer):
