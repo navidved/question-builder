@@ -5,7 +5,7 @@ from django.db.models import Manager
 from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin
 
 
-class VisitorAnswer(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
+class VisitorAnswer(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
     default_answers = {
         "multi-choice": None,
         "radio-button": None,
