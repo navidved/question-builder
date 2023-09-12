@@ -19,7 +19,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Form
-        fields = "__all__"
+        exclude = ('slug','user')
 
 
 class VisitorAnswersSerializer(serializers.ModelSerializer):
