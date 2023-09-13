@@ -47,6 +47,7 @@ class FormAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "is_active",
+        "auth_method",
         "category",
         "slug",
         "title",
@@ -65,7 +66,7 @@ class FormAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
     fieldsets = (
-        (_("Category"), {"fields": ("category",)}),
+        (_("Category"), {"fields": ("category", "auth_method")}),
         (_("General"), {"fields": ("title", "description", "slug")}),
         (_("Timing"), {"fields": ("start_date", "end_date", "time_limit")}),
         (_("Others"), {"fields": ("file_name", "image_name")}),
@@ -82,6 +83,7 @@ class FormAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "is_active",
+        "auth_method",
         "category",
         "slug",
         "title",
@@ -101,7 +103,7 @@ class FormAdmin(admin.ModelAdmin):
     actions = ("activate_form",)
 
     fieldsets = (
-        (_("Category"), {"fields": ("category",)}),
+        (_("Category"), {"fields": ("category", "auth_method")}),
         (_("General"), {"fields": ("title", "description", "slug")}),
         (_("Timing"), {"fields": ("start_date", "end_date", "time_limit")}),
         (_("Others"), {"fields": ("file_name", "image_name")}),

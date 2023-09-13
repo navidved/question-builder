@@ -15,26 +15,17 @@ from form_builder.models import Tag, Category
 
 
 class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
+    AUTH_CHOICES = [
+        ("AN", "Anonymous"),
+        ("EM", "Email"),
+        ("PH", "Phone number"),
+    ]
+    auth_method = models.CharField(
+        verbose_name=_("Authentication method"), choices=AUTH_CHOICES, max_length=2
+    )
     title = models.CharField(verbose_name=_("Title"), max_length=255)
 
     description = models.TextField(_("Description"), blank=True, null=True)
-
-    slug = models.SlugField(
-        verbose_name=_("Slug"),
-        unique=True,
-        max_length=55,
-    )
-
-    start_date = models.DateTimeField(
-        verbose_name=_("Start date and time"),
-        default=timezone.now,
-    )
-
-    end_date = models.DateTimeField(
-        verbose_name=_("End date and time"),
-        blank=True,
-        null=True,
-    )
 
     file_name = models.UUIDField(
         verbose_name=_("File name"),
@@ -48,16 +39,28 @@ class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         null=True,
     )
 
+    start_date = models.DateTimeField(
+        verbose_name=_("Start date and time"),
+        default=timezone.now,
+    )
+
+    end_date = models.DateTimeField(
+        verbose_name=_("End date and time"),
+        blank=True,
+        null=True,
+    )
+
     time_limit = models.PositiveIntegerField(
         verbose_name=_("Time limit in second"),
         blank=True,
         null=True,
     )
 
-    users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        verbose_name=_("Users"),
-        through="FormUser",
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("Category"),
+        on_delete=models.PROTECT,
+        related_name="forms",
     )
 
     tags = models.ManyToManyField(
@@ -66,11 +69,16 @@ class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         through="FormTag",
     )
 
-    category = models.ForeignKey(
-        Category,
-        verbose_name=_("Category"),
-        on_delete=models.PROTECT,
-        related_name="forms",
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("Users"),
+        through="FormUser",
+    )
+
+    slug = models.SlugField(
+        verbose_name=_("Slug"),
+        unique=True,
+        max_length=55,
     )
 
     def save(self, *args, **kwargs):
@@ -108,11 +116,7 @@ class FormUser(BaseModel, CreatedAtStampMixin):
 
 
 class FormTag(BaseModel, CreatedAtStampMixin):
-    form = models.ForeignKey(
-        Form,
-        on_delete=models.CASCADE,
-        related_name='form_tags'
-    )
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="form_tags")
 
     tag = models.ForeignKey(
         Tag,
