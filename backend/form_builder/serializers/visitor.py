@@ -5,7 +5,7 @@ from form_builder.models import Visitor, VisitorAnswer, Form, FormItem
 class FormItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormItem
-        exclude = ("default_options",)
+        fields = '__all__'
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Form
-        exclude = ("slug", "user")
+        exclude = ("slug", "users")
 
 
 class VisitorAnswersSerializer(serializers.ModelSerializer):
