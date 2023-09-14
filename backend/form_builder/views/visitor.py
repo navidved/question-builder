@@ -48,7 +48,7 @@ class VisitorAuthenticationView(APIView):
             return Response(data=visitor_srz.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AddVisitorAnswer(APIView):
+class AddVisitorAnswerView(APIView):
     def post(self, request: Request):
 
         form = Form.objects.get(id=request.data['form_id'])
@@ -73,7 +73,7 @@ class AddVisitorAnswer(APIView):
         return Response(data=visitor_answer_srz.data, status=status.HTTP_200_OK)
 
 
-class AnswerUpdateView(APIView):
+class UpdateVisitorAnswerView(APIView):
 
     def patch(self, request: Request, visitoranswer_id):
         answer = get_object_or_404(VisitorAnswer, id=visitoranswer_id)
