@@ -24,6 +24,7 @@ class VisitorAnswersSerializer(serializers.ModelSerializer):
 
 class VisitorSerializer(serializers.ModelSerializer):
     visitor_answers = VisitorAnswersSerializer(many=True, read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Visitor

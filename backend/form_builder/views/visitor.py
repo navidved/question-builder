@@ -30,15 +30,22 @@ class VisitorAuthenticationView(APIView):
             visitor = Visitor.objects.get(
                 form=form, auth_value=request.data["auth_value"]
                 )
+            visitor_srz = VisitorSerializer(instance=visitor)
+            return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
+
         except Visitor.DoesNotExist:
             visitor_srz = VisitorSerializer(data=request.data)
             if visitor_srz.is_valid():
-                visitor_srz.create(validated_data=visitor_srz.validated_data)
+                # visitor_srz.create(validated_data=visitor_srz.validated_data)
+                form = Form.objects.get(id=request.data['form'])
+                visitor = Visitor.objects.create(
+                    auth_type=request.data['auth_type'],
+                    auth_value=request.data['auth_value'],
+                    form=form
+                )
+                visitor_srz = VisitorSerializer(instance=visitor)
                 return Response(data=visitor_srz.data, status=status.HTTP_201_CREATED)
             return Response(data=visitor_srz.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        visitor_srz = VisitorSerializer(instance=visitor)
-        return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
 
 
 class AddVisitorAnswer(APIView):

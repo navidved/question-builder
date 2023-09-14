@@ -21,11 +21,17 @@ class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
         null=True,
     )
 
-    form = models.ManyToManyField(
+    form = models.ForeignKey(
         Form,
         verbose_name=_("Form"),
-        through="VisitorForm",
+        on_delete=models.CASCADE,
     )
+
+    # form = models.ManyToManyField(
+    #     Form,
+    #     verbose_name=_("Form"),
+    #     through="VisitorForm",
+    # )
 
     def __str__(self):
         return str(self.auth_value)
