@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from form_builder.models.form_item import FormItem
-
 from form_builder.serializers.visitor import (
     FormItemSerializer,
     FormSerializer,
