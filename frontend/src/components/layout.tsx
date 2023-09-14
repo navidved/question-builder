@@ -13,7 +13,7 @@ export default function Layout() {
         overflow: "hidden",
       }}
     >
-      <Box
+      {/* <Box
         sx={{
           backgroundColor: "#FDA9FF",
           width: "411px",
@@ -23,7 +23,7 @@ export default function Layout() {
           top: "-96px",
           left: "-104px",
         }}
-      ></Box>
+      />
       <Box
         sx={{
           backgroundColor: "#fff",
@@ -34,11 +34,11 @@ export default function Layout() {
           top: "-197px",
           left: "142px",
         }}
-      ></Box>
-      <Container maxWidth="md">
+      /> */}
+      <Container maxWidth="md" sx={{ height: "50vh", backgroundColor: "red" }}>
         <Outlet />
       </Container>
-      <Box
+      {/* <Box
         sx={{
           backgroundColor: "#9AFFED",
           width: "307px",
@@ -48,7 +48,7 @@ export default function Layout() {
           right: "-110px",
           bottom: "100px",
         }}
-      ></Box>
+      />
       <Box
         sx={{
           backgroundColor: "#FFEE94",
@@ -59,7 +59,7 @@ export default function Layout() {
           right: "-150px",
           bottom: "-100px",
         }}
-      ></Box>
+      /> */}
     </Box>
   );
 }

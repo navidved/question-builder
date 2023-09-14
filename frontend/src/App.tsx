@@ -1,6 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Layout from "./components/layout";
 import Home from "./components/home";
+import FormPage from "./components/form-page";
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="/:formId" element={<FormPage />} />
           <Route path="dashboard" element={<Dashboard />} />
 
           {/* Using path="*"" means "match anything", so this route
