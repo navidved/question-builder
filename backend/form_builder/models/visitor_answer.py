@@ -29,7 +29,7 @@ class VisitorAnswer(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
     class Meta:
         verbose_name, verbose_name_plural = _("Visitor answer"), _("Visitor answers")
         db_table = "VisitorAnswer"
-        unique_together = ("visitor", "form", "form_item", "answer")
+        unique_together = ("visitor", "form", "form_item")
 
 
 class VisitorAnswerRecycle(VisitorAnswer):
