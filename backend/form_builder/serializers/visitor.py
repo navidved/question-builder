@@ -28,7 +28,7 @@ class VisitorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visitor
         fields = [
-            "id"
+            "id",
             "auth_type",
             "auth_value",
             "form",
