@@ -35,7 +35,7 @@ export default function Layout() {
           left: "142px",
         }}
       /> */}
-      <Container maxWidth="md" sx={{ height: "50vh", backgroundColor: "red" }}>
+      <Container maxWidth="sm">
         <Outlet />
       </Container>
       {/* <Box
