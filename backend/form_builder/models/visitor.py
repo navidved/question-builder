@@ -16,7 +16,7 @@ class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
     )
 
     auth_value = models.CharField(
-        max_length=20,
+        max_length=255,
         blank=True,
         null=True,
     )
