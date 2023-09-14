@@ -76,7 +76,6 @@ class AddVisitorAnswer(APIView):
 class AnswerUpdateView(APIView):
 
     def patch(self, request: Request, visitoranswer_id):
-        print(visitoranswer_id)
         answer = get_object_or_404(VisitorAnswer, id=visitoranswer_id)
         answer_srz = VisitorAnswersSerializer(
             instance=answer, data=request.data, partial=True
