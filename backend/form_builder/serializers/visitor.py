@@ -17,9 +17,10 @@ class FormSerializer(serializers.ModelSerializer):
 
 
 class VisitorAnswersSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     class Meta:
         model = VisitorAnswer
-        fields = ["visitor", "form", "form_item", "answer"]
+        fields = ["id","visitor", "form", "form_item", "answer"]
 
 
 class VisitorSerializer(serializers.ModelSerializer):
