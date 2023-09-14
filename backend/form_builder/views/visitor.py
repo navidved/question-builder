@@ -23,13 +23,12 @@ class GettingFormToAnswerView(APIView):
 
 
 class VisitorAuthenticationView(APIView):
-
     def post(self, request):
         try:
-            form = Form.objects.get(id=request.data['form'])
+            form = Form.objects.get(id=request.data["form"])
             visitor = Visitor.objects.get(
                 form=form, auth_value=request.data["auth_value"]
-                )
+            )
             visitor_srz = VisitorSerializer(instance=visitor)
             return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
 
@@ -37,11 +36,11 @@ class VisitorAuthenticationView(APIView):
             visitor_srz = VisitorSerializer(data=request.data)
             if visitor_srz.is_valid():
                 # visitor_srz.create(validated_data=visitor_srz.validated_data)
-                form = Form.objects.get(id=request.data['form'])
+                form = Form.objects.get(id=request.data["form"])
                 visitor = Visitor.objects.create(
-                    auth_type=request.data['auth_type'],
-                    auth_value=request.data['auth_value'],
-                    form=form
+                    auth_type=request.data["auth_type"],
+                    auth_value=request.data["auth_value"],
+                    form=form,
                 )
                 visitor_srz = VisitorSerializer(instance=visitor)
                 return Response(data=visitor_srz.data, status=status.HTTP_201_CREATED)
@@ -50,33 +49,24 @@ class VisitorAuthenticationView(APIView):
 
 class AddVisitorAnswerView(APIView):
     def post(self, request: Request):
-
-        form = Form.objects.get(id=request.data['form_id'])
-        form_item = FormItem.objects.get(id=request.data['form_item_id'])
-        visitor = Visitor.objects.get(id=request.data['visitor_id'])
+        form = Form.objects.get(id=request.data["form"])
+        form_item = FormItem.objects.get(id=request.data["form_item"])
+        visitor = Visitor.objects.get(id=request.data["visitor"])
 
         visitor_answer = VisitorAnswer.objects.create(
             form=form,
             form_item=form_item,
             visitor=visitor,
-            answer=request.data['answer']
+            answer=request.data["answer"],
         )
-
-        # if not visitor_answer:
-        #     visitor_answer_srz = VisitorAnswersSerializer(data=request.data)
-        #     if visitor_answer_srz.is_valid():
-        #         visitor_answer_srz.create(validated_data=visitor_answer_srz.validated_data)
-        #         return Response(data=visitor_answer_srz.data, status=status.HTTP_201_CREATED)
-        #     return Response(data=visitor_answer_srz.errors, status=status.HTTP_400_BAD_REQUEST)
 
         visitor_answer_srz = VisitorAnswersSerializer(instance=visitor_answer)
         return Response(data=visitor_answer_srz.data, status=status.HTTP_200_OK)
 
 
 class UpdateVisitorAnswerView(APIView):
-
-    def patch(self, request: Request, visitoranswer_id):
-        answer = get_object_or_404(VisitorAnswer, id=visitoranswer_id)
+    def patch(self, request: Request, answer_id):
+        answer = get_object_or_404(VisitorAnswer, id=answer_id)
         answer_srz = VisitorAnswersSerializer(
             instance=answer, data=request.data, partial=True
         )
