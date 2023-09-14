@@ -16,10 +16,8 @@ from form_builder.models.visitor import Visitor
 from form_builder.models.visitor_answer import VisitorAnswer
 
 
-
 class GettingFormToAnswerView(APIView):
     def get(self, request: Request, form_slug):
-        print("---------------------------------------------")
         form = get_object_or_404(Form, slug=form_slug)
         form_srz = FormSerializer(instance=form)
         return Response(data=form_srz.data, status=status.HTTP_200_OK)
