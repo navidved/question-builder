@@ -10,11 +10,6 @@ from form_builder.models import Form
 
 
 class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
-    default_options = {
-        "multi-choice": None,
-        "radio-button": None,
-        "text": None,
-    }
 
     RADIOBUTTON = "RB"
     MULTICHECK = "MC"
@@ -55,7 +50,7 @@ class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         blank=True,
         null=True,
     )
-    options = models.JSONField(verbose_name=_("options"), default=default_options)
+    options = models.JSONField(verbose_name=_("options"))
     order = models.PositiveIntegerField(verbose_name=_("order"))
     answer_condition = models.PositiveIntegerField(
         verbose_name=_("answer condition"), choices=ANSWER_CONDITION_CHOICES, default=0

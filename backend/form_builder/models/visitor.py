@@ -16,22 +16,16 @@ class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
     )
 
     auth_value = models.CharField(
-        max_length=20,
+        max_length=255,
         blank=True,
         null=True,
     )
 
-    form = models.ForeignKey(
+    form = models.ManyToManyField(
         Form,
         verbose_name=_("Form"),
-        on_delete=models.CASCADE,
+        through="VisitorForm",
     )
-
-    # form = models.ManyToManyField(
-    #     Form,
-    #     verbose_name=_("Form"),
-    #     through="VisitorForm",
-    # )
 
     def __str__(self):
         return str(self.auth_value)

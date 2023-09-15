@@ -14,6 +14,7 @@ from .models import (
     FormItem,
     FormItemRecycle,
     Visitor,
+    VisitorForm,
     VisitorAnswer,
     VisitorAnswerRecycle,
 )
@@ -266,3 +267,9 @@ class TagAdmin(admin.ModelAdmin):
     list_display_links = ["pk", "title", "created_at", "description"]
     list_filter = ["title"]
     search_fields = ["title", "description"]
+
+
+@admin.register(VisitorForm)
+class VisitorFormAdmin(admin.ModelAdmin):
+    list_display = ("id", "visitor", "form")
+    list_display_links = ("id", "visitor", "form")

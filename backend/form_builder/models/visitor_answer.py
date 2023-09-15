@@ -6,11 +6,6 @@ from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixi
 
 
 class VisitorAnswer(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
-    default_answers = {
-        "multi-choice": None,
-        "radio-button": None,
-        "text": None,
-    }
 
     visitor = models.ForeignKey(
         "form_builder.Visitor", on_delete=models.CASCADE, related_name="visitor_answers"
@@ -26,7 +21,6 @@ class VisitorAnswer(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
 
     answer = models.JSONField(
         verbose_name=_("Answer"),
-        default=default_answers,
     )
 
     def __str__(self) -> str:
@@ -35,7 +29,7 @@ class VisitorAnswer(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
     class Meta:
         verbose_name, verbose_name_plural = _("Visitor answer"), _("Visitor answers")
         db_table = "VisitorAnswer"
-        unique_together = ("visitor", "form", "form_item", "answer")
+        unique_together = ("visitor", "form", "form_item")
 
 
 class VisitorAnswerRecycle(VisitorAnswer):

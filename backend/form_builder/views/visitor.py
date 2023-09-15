@@ -1,18 +1,18 @@
+from django.shortcuts import get_object_or_404
+from django.db.utils import IntegrityError
+
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import get_object_or_404
-from form_builder.models.form_item import FormItem
+
+from form_builder.models import Form, FormItem, Visitor, VisitorForm, VisitorAnswer
 from form_builder.serializers.visitor import (
-    FormItemSerializer,
     FormSerializer,
     VisitorSerializer,
+    VisitorFormSerializer,
     VisitorAnswersSerializer,
 )
-from form_builder.models.form import Form
-from form_builder.models.visitor import Visitor
-from form_builder.models.visitor_answer import VisitorAnswer
 
 
 class GettingFormToAnswerView(APIView):
@@ -23,61 +23,88 @@ class GettingFormToAnswerView(APIView):
 
 
 class VisitorAuthenticationView(APIView):
-
     def post(self, request):
         try:
-            form = Form.objects.get(id=request.data['form'])
-            visitor = Visitor.objects.get(
-                form=form, auth_value=request.data["auth_value"]
-                )
-            visitor_srz = VisitorSerializer(instance=visitor)
-            return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
+            form_id = request.data["form"]
+            auth_value = request.data["auth_value"]
+            auth_type = request.data["auth_type"]
+
+            form = Form.objects.get(id=form_id)
+            visitor = Visitor.objects.get(auth_value=auth_value)
+            visitor_form = VisitorForm.objects.get(form=form, visitor=visitor)
+            visitor_form_srz = VisitorFormSerializer(
+                instance=visitor_form, context={"form": form, "visitor": visitor}
+            )
+            return Response(data=visitor_form_srz.data, status=status.HTTP_200_OK)
 
         except Visitor.DoesNotExist:
-            visitor_srz = VisitorSerializer(data=request.data)
-            if visitor_srz.is_valid():
-                # visitor_srz.create(validated_data=visitor_srz.validated_data)
-                form = Form.objects.get(id=request.data['form'])
-                visitor = Visitor.objects.create(
-                    auth_type=request.data['auth_type'],
-                    auth_value=request.data['auth_value'],
-                    form=form
-                )
-                visitor_srz = VisitorSerializer(instance=visitor)
-                return Response(data=visitor_srz.data, status=status.HTTP_201_CREATED)
-            return Response(data=visitor_srz.errors, status=status.HTTP_400_BAD_REQUEST)
+            visitor_srz = VisitorSerializer(data=request.data, context={"form": form})
+            visitor_srz.is_valid(raise_exception=True)
+            visitor = visitor_srz.save()
+            visitor_form = VisitorForm.objects.create(form=form, visitor=visitor)
+            visitor_form_srz = VisitorFormSerializer(
+                instance=visitor_form, context={"form": form, "visitor": visitor}
+            )
+            return Response(data=visitor_form_srz.data, status=status.HTTP_201_CREATED)
+
+        except VisitorForm.DoesNotExist:
+            visitor_form = VisitorForm.objects.create(form=form, visitor=visitor)
+            visitor_form_srz = VisitorFormSerializer(
+                instance=visitor_form, context={"form": form, "visitor": visitor}
+            )
+            return Response(data=visitor_form_srz.data, status=status.HTTP_201_CREATED)
+
+        except (KeyError, Form.DoesNotExist):
+            return Response(
+                {"Error": "Invalid data provided"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
-class AddVisitorAnswer(APIView):
+class AddVisitorAnswerView(APIView):
     def post(self, request: Request):
+        try:
+            form_id = request.data["form"]
+            form_item_id = request.data["form_item"]
+            visitor_id = request.data["visitor"]
+            answer = request.data["answer"]
+        except KeyError:
+            return Response(
+                {"Error": "Invalid data provided"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        form = Form.objects.get(id=request.data['form_id'])
-        form_item = FormItem.objects.get(id=request.data['form_item_id'])
-        visitor = Visitor.objects.get(id=request.data['visitor_id'])
+        form = get_object_or_404(Form, id=form_id)
+        form_item = get_object_or_404(FormItem, id=form_item_id)
+        visitor = get_object_or_404(Visitor, id=visitor_id)
 
-        visitor_answer = VisitorAnswer.objects.create(
-            form=form,
-            form_item=form_item,
-            visitor=visitor,
-            answer=request.data['answer']
-        )
+        if form_item.form_id != form.id:
+            return Response(
+                {"Error": "Invalid data provided"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        # if not visitor_answer:
-        #     visitor_answer_srz = VisitorAnswersSerializer(data=request.data)
-        #     if visitor_answer_srz.is_valid():
-        #         visitor_answer_srz.create(validated_data=visitor_answer_srz.validated_data)
-        #         return Response(data=visitor_answer_srz.data, status=status.HTTP_201_CREATED)
-        #     return Response(data=visitor_answer_srz.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            visitor_answer = VisitorAnswer.objects.create(
+                form=form,
+                form_item=form_item,
+                visitor=visitor,
+                answer=answer,
+            )
+        except IntegrityError:
+            visitor_answer = VisitorAnswer.objects.get(
+                form=form,
+                form_item=form_item,
+                visitor=visitor,
+            )
+            visitor_answer_srz = VisitorAnswersSerializer(instance=visitor_answer)
+            data = {"message": "Already answered.", "data": visitor_answer_srz.data}
+            return Response(data, status=status.HTTP_200_OK)
 
         visitor_answer_srz = VisitorAnswersSerializer(instance=visitor_answer)
-        return Response(data=visitor_answer_srz.data, status=status.HTTP_200_OK)
+        return Response(data=visitor_answer_srz.data, status=status.HTTP_201_CREATED)
 
 
-class AnswerUpdateView(APIView):
-
-    def patch(self, request: Request, visitoranswer_id):
-        print(visitoranswer_id)
-        answer = get_object_or_404(VisitorAnswer, id=visitoranswer_id)
+class UpdateVisitorAnswerView(APIView):
+    def patch(self, request: Request, answer_id):
+        answer = get_object_or_404(VisitorAnswer, id=answer_id)
         answer_srz = VisitorAnswersSerializer(
             instance=answer, data=request.data, partial=True
         )
