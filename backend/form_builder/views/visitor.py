@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.db.utils import IntegrityError
+import uuid
 
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -28,6 +29,9 @@ class VisitorAuthenticationView(APIView):
             form_id = request.data["form"]
             auth_value = request.data["auth_value"]
             auth_type = request.data["auth_type"]
+
+            if auth_value == "":
+                request.data["auth_value"] = uuid.uuid4().hex
 
             form = Form.objects.get(id=form_id)
             visitor = Visitor.objects.get(auth_value=auth_value)
