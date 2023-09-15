@@ -1,46 +1,31 @@
 import { Stack, Typography, Button, Box } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { useState } from "react";
 import AuthCheck from "./auth-check";
+import useGetForm from "./custom-hooks/use-get-form";
+import useCreateVisitor from "./custom-hooks/use-create-visitor";
 
 export default function FormPage() {
-  let formId = useParams();
+  let params = useParams();
+  let { formId } = params;
   const [formItem, setFormItem] = useState<number>(-1);
   const [formAuthValue, setFormAuthValue] = useState<string>("");
 
-  const getFormById = async (formId: string): Promise<any> => {
-    const { data } = await axios.get(
-      `http://127.0.0.1:8000/api/visitor/${formId}`
-    );
-    return data;
-  };
-
-  function useForm(formId: string) {
-    return useQuery({
-      queryKey: ["form", formId],
-      queryFn: () => getFormById(formId),
-      enabled: !!formId,
-    });
-  }
-  const { status, data, error, isFetching } = useForm(formId.formId);
+  const { status, data, error, isFetching } = useGetForm(formId);
   if (isFetching) return "Loading...";
   if (error) return "An error has occurred: " + error.message;
-
   const { form_items, auth_method } = data;
 
-  console.log({ auth_method });
-  console.log({ data });
-  console.log({ formAuthValue });
+  const { mutate: createVisitor } = useCreateVisitor();
 
   function handleStart() {
-    setFormItem(0);
-    // mutation.mutate({
-    //   form: data.id,
-    //   auth_type: auth_method,
-    //   auth_value: formAuthValue,
-    // });
+    // setFormItem(0);
+    console.log({ formAuthValue, auth_method });
+    createVisitor({
+      form: data.id,
+      auth_type: auth_method,
+      auth_value: formAuthValue,
+    });
   }
 
   // const mutation = useMutation({
@@ -48,6 +33,14 @@ export default function FormPage() {
   //     return axios.post(`http://127.0.0.1:8000/api/visitor/create`, visitor);
   //   },
   // });
+
+  // const mutation = useMutation((newPost) =>
+  //   axios.post("https://jsonplaceholder.typicode.com/posts", newPost)
+  // );
+
+  // const submitData = () => {
+  //   mutation.mutate({ title, body });
+  // };
 
   return (
     <Stack justifyContent="space-between" height="50vh">
