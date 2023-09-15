@@ -3,7 +3,7 @@ import axios from "axios";
 
 const getFormById = async (formId: string): Promise<any> => {
   const { data } = await axios.get(
-    `http://127.0.0.1:8000/api/visitor/${formId}`
+    `http://127.0.0.1:8000/api/visitor/form/${formId}`
   );
   return data;
 };
