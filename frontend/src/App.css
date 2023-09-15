@@ -1,5 +1,6 @@
 :root {
   --swiper-navigation-size: 10px !important;
+  direction: rtl;
 }
 html,
 body {

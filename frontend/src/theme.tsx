@@ -49,14 +49,14 @@ const theme = createTheme({
       },
     },
 
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "white",
-          height: "36px",
-        },
-      },
-    },
+    // MuiInputBase: {
+    //   styleOverrides: {
+    //     root: {
+    //       backgroundColor: "white",
+    //       height: "36px",
+    //     },
+    //   },
+    // },
   },
 });
 
