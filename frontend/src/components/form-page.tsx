@@ -63,14 +63,16 @@ export default function FormPage() {
   function handleSubmit() {
     createAnswer({
       visitor: visitorAuth != undefined ? visitorAuth?.visitor?.id : 0,
-      form: formData.id,
-      form_item: formData.form_items ? formData.form_items[formItem].id : null,
+      form: formData?.id,
+      form_item: formData?.form_items
+        ? formData?.form_items[formItem]?.id
+        : null,
       answer: visitorAnswer,
     });
     setVisitorAnswer({ text: "", "radio-button": "", "multi-choice": [] });
     setFormItem((prev) => prev + 1);
   }
-  
+
   function handleAddAnswer(
     key: "multi-choice" | "radio-button" | "text",
     value: string
