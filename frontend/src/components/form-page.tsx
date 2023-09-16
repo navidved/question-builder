@@ -13,85 +13,68 @@ import {
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import AuthCheck from "./auth-check";
-import useGetForm from "./custom-hooks/use-get-form";
-import axios from "axios";
+import { QuestionAnswerType } from "../api/types";
+import {
+  useCheckVisitorAuth,
+  useCreateVisitorAnswer,
+  useGetForm,
+} from "../api/hooks";
 
 export default function FormPage() {
   let params = useParams();
   let { formId } = params;
 
-  type VisitorAnswerType = {
-    "multi-choice": string[];
-    "radio-button": string;
-    text: string;
-  };
-  type visitorAuthCheckType = {
-    form: number;
-    auth_type: string;
-    auth_value: string;
-  };
-
   if (formId == undefined) return null;
   const [formItem, setFormItem] = useState<number>(-1);
   const [formAuthValue, setFormAuthValue] = useState<string>("");
-  const [visitorAuth, setVisitorAuth] = useState();
-  const [visitorAnswer, setVisitorAnswer] = useState<VisitorAnswerType>({
+  const [visitorAnswer, setVisitorAnswer] = useState<QuestionAnswerType>({
     "multi-choice": [],
     "radio-button": "",
     text: "",
   });
 
-  const { data, error, isFetching } = useGetForm(formId);
-  if (isFetching) return "Loading...";
-  if (error) return "An error has occurred: " + error.message;
-  const { form_items, auth_method, title } = data;
+  const { data: formData, isFetching } = useGetForm(formId);
+  const { mutate: checkVisitor, data: visitorAuth } = useCheckVisitorAuth();
+  const { mutate: createAnswer } = useCreateVisitorAnswer();
 
-  const createUser = async (userData: visitorAuthCheckType) => {
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/visitor/auth/",
-      userData
-    );
-    setVisitorAuth(response.data);
-  };
-  const createAnswer = async (userData) => {
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/visitor/answer/create/",
-      userData
-    );
-    return response.data;
-  };
-
-  const userData = {
-    form: data.id,
-    auth_type: data.auth_method,
-    auth_value: formAuthValue,
-  };
   function handleStart() {
+    const visitorCheckData = {
+      form: formData?.id,
+      auth_type: formData?.auth_method,
+      auth_value: formAuthValue,
+    };
     setFormItem(0);
-    createUser(userData);
+    checkVisitor(visitorCheckData);
   }
 
   function handleNext() {
     setFormItem((prev) => prev + 1);
     createAnswer({
       visitor: visitorAuth != undefined ? visitorAuth?.visitor?.id : 0,
-      form: data.id,
-      form_item: form_items[formItem].id,
+      form: formData?.id,
+      form_item: formData?.form_items
+        ? formData?.form_items[formItem]?.id
+        : null,
       answer: visitorAnswer,
     });
     setVisitorAnswer({ text: "", "radio-button": "", "multi-choice": [] });
   }
+
   function handleSubmit() {
     createAnswer({
       visitor: visitorAuth != undefined ? visitorAuth?.visitor?.id : 0,
-      form: data.id,
-      form_item: form_items[formItem].id,
+      form: formData.id,
+      form_item: formData.form_items ? formData.form_items[formItem].id : null,
       answer: visitorAnswer,
     });
     setVisitorAnswer({ text: "", "radio-button": "", "multi-choice": [] });
     setFormItem((prev) => prev + 1);
   }
-  function handleAddAnswer(key, value) {
+  
+  function handleAddAnswer(
+    key: "multi-choice" | "radio-button" | "text",
+    value: string
+  ) {
     if (key == "multi-choice") {
       setVisitorAnswer((prev) => ({
         ...prev,
@@ -106,6 +89,9 @@ export default function FormPage() {
       }));
     }
   }
+
+  if (isFetching) return "Loading...";
+  const { form_items, auth_method, title } = formData;
 
   return (
     <Stack justifyContent="space-between" height="50vh">
