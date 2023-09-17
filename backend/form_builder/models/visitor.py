@@ -6,13 +6,18 @@ from form_builder.models import Form
 
 
 class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
+    ANONYMOUS = "anonymous"
+    EMAIL = "email"
+    PHONE = "phone"
     AUTHENTICATION_CHOICES = [
-        ("AN", "Anonymous"),
-        ("EM", "Email"),
-        ("PH", "Phone number"),
+        (ANONYMOUS, _("Anonymous")),
+        (EMAIL, _("Email")),
+        (PHONE, _("Phone number")),
     ]
     auth_type = models.CharField(
-        max_length=2, choices=AUTHENTICATION_CHOICES, default="Anonymous"
+        choices=AUTHENTICATION_CHOICES,
+        default=ANONYMOUS,
+        max_length=255,
     )
 
     auth_value = models.CharField(
@@ -37,10 +42,16 @@ class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
 
 class VisitorForm(BaseModel, CreatedAtStampMixin):
     visitor = models.ForeignKey(
-        Visitor, verbose_name=_("Visitor"), on_delete=models.CASCADE
+        Visitor,
+        verbose_name=_("Visitor"),
+        on_delete=models.CASCADE,
     )
 
-    form = models.ForeignKey(Form, verbose_name=_("Form"), on_delete=models.CASCADE)
+    form = models.ForeignKey(
+        Form,
+        verbose_name=_("Form"),
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name, verbose_name_plural = _("Visitor form"), _("Visitor forms")

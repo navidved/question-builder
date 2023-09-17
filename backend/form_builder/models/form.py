@@ -5,27 +5,40 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from form_builder.models import Tag, Category
 from core.models import (
     BaseModel,
     SoftDeleteModel,
     CreatedAtStampMixin,
     UpdatedAtStampMixin,
 )
-from form_builder.models import Tag, Category
 
 
 class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
+    ANONYMOUS = "anonymous"
+    EMAIL = "email"
+    PHONE = "phone"
     AUTH_CHOICES = [
-        ("AN", "Anonymous"),
-        ("EM", "Email"),
-        ("PH", "Phone number"),
+        (ANONYMOUS, _("Anonymous")),
+        (EMAIL, _("Email")),
+        (PHONE, _("Phone number")),
     ]
     auth_method = models.CharField(
-        verbose_name=_("Authentication method"), choices=AUTH_CHOICES, max_length=2
+        verbose_name=_("Authentication method"),
+        choices=AUTH_CHOICES,
+        default=ANONYMOUS,
+        max_length=255,
     )
-    title = models.CharField(verbose_name=_("Title"), max_length=255)
+    title = models.CharField(
+        verbose_name=_("Title"),
+        max_length=255,
+    )
 
-    description = models.TextField(_("Description"), blank=True, null=True)
+    description = models.TextField(
+        _("Description"),
+        blank=True,
+        null=True,
+    )
 
     file_name = models.UUIDField(
         verbose_name=_("File name"),

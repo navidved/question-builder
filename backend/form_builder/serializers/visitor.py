@@ -1,50 +1,6 @@
 from rest_framework import serializers
-from form_builder.models import Visitor, VisitorAnswer, Form, FormItem, VisitorForm
-
-
-class FormItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FormItem
-        fields = [
-            "id",
-            "answer_type",
-            "title",
-            "description",
-            "order",
-            "answer_condition",
-            "file_name",
-            "time_limit",
-            "options",
-        ]
-
-
-class FormSerializer(serializers.ModelSerializer):
-    form_items = FormItemSerializer(many=True)
-
-    class Meta:
-        model = Form
-        fields = [
-            "id",
-            "auth_method",
-            "title",
-            "description",
-            "file_name",
-            "image_name",
-            "start_date",
-            "end_date",
-            "time_limit",
-            "category",
-            "tags",
-            "form_items",
-        ]
-
-
-class VisitorAnswersSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = VisitorAnswer
-        fields = ["id", "visitor", "form", "form_item", "answer"]
+from form_builder.models import Visitor, VisitorAnswer
+from form_builder.serializers import UpdateAnswerSerializer
 
 
 class VisitorSerializer(serializers.ModelSerializer):
@@ -59,11 +15,11 @@ class VisitorSerializer(serializers.ModelSerializer):
             visitor_answers = VisitorAnswer.objects.filter(
                 form=self.context["form"], visitor=self.context["visitor"]
             )
-            visitor_answers_srz = VisitorAnswersSerializer(
+            visitor_answers_srz = UpdateAnswerSerializer(
                 instance=visitor_answers, many=True
             )
             return visitor_answers_srz.data
-        return VisitorAnswersSerializer(many=True, read_only=True)
+        return UpdateAnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Visitor
@@ -73,11 +29,3 @@ class VisitorSerializer(serializers.ModelSerializer):
             "auth_value",
             "visitor_answers",
         ]
-
-
-class VisitorFormSerializer(serializers.ModelSerializer):
-    visitor = VisitorSerializer()
-
-    class Meta:
-        model = VisitorForm
-        fields = ["form", "visitor"]

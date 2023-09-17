@@ -1,10 +1,11 @@
+from uuid import uuid4
 from django.db import models
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from django_json_widget.widgets import JSONEditorWidget
 
-from .models import (
+from form_builder.models import (
     Category,
     Tag,
     Form,
@@ -131,6 +132,7 @@ class FormItemAdmin(admin.ModelAdmin):
     }
 
     list_display = (
+        "id",
         "is_active",
         "title",
         "form",
@@ -165,6 +167,7 @@ class FormItemAdmin(admin.ModelAdmin):
     }
 
     list_display = (
+        "id",
         "is_active",
         "title",
         "form",
@@ -251,6 +254,11 @@ class VsitorAdmin(admin.ModelAdmin):
     list_display_links = ("id", "auth_type", "auth_value")
     search_fields = ("auth_value",)
     list_filter = ("auth_value",)
+
+    def save_model(self, request, obj, form, change):
+        if obj.auth_type == "anonymous":
+            visitor = Visitor.objects.create(auth_value=uuid4().hex)
+        return visitor
 
 
 @admin.register(Category)
