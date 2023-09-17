@@ -51,9 +51,8 @@ class CreateVisitorSerializer(serializers.Serializer):
         visitor = Visitor.objects.get(id=self.context.get('visitor_id'))
 
         answers = VisitorAnswer.objects.filter(
-            form = form, visitor = visitor
+            form=form, visitor=visitor
         )
-        print(answers)
         return VisitorAnswersSerializer2(instance=answers, many=True).data
 
     def create(self, validated_data):

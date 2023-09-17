@@ -32,5 +32,5 @@ class CreateVisitorView(APIView):
                         "visitor_id": visitor.id,
                     }
                 )
-                return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
+                return Response(data=visitor_srz.data, status=status.HTTP_201_CREATED)
         return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
