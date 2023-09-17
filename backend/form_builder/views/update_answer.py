@@ -19,8 +19,6 @@ class UpdateAnswerView(APIView):
             partial=True,
             context={"answer_type": context},
         )
-        if answer_srz.is_valid():
-            answer_srz.update(answer, answer_srz.validated_data)
-            data = answer_srz.data
-            return Response(data, status=status.HTTP_200_OK)
-        return Response(answer_srz.errors, status=status.HTTP_400_BAD_REQUEST)
+        answer_srz.is_valid(raise_exception=True)
+        answer_srz.update(answer, answer_srz.validated_data)
+        return Response(status=status.HTTP_200_OK)

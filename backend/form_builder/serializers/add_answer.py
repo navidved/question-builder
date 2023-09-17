@@ -5,12 +5,12 @@ from form_builder.validators import answer_validator
 
 class AddVisitorAnswerSerializer(serializers.ModelSerializer):
     def validate_answer(self, answer: dict):
-        answer_type_validation = answer_validator(
+        valid_answer = answer_validator(
             self.context.get("answer_type"),
             answer,
         )
-        if answer_type_validation:
-            return answer
+        if valid_answer:
+            return valid_answer
         raise serializers.ValidationError("Incorrect Answer")
 
     class Meta:
