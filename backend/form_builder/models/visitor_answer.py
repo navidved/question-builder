@@ -2,21 +2,30 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Manager
 
-from core.models import SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin
+from core.models import (
+    SoftDeleteModel,
+    CreatedAtStampMixin,
+    UpdatedAtStampMixin,
+)
 
 
 class VisitorAnswer(CreatedAtStampMixin, UpdatedAtStampMixin, SoftDeleteModel):
-
     visitor = models.ForeignKey(
-        "form_builder.Visitor", on_delete=models.CASCADE, related_name="visitor_answers"
+        "form_builder.Visitor",
+        on_delete=models.CASCADE,
+        related_name="visitor_answers",
     )
 
     form = models.ForeignKey(
-        "form_builder.Form", on_delete=models.CASCADE, related_name="answers"
+        "form_builder.Form",
+        on_delete=models.CASCADE,
+        related_name="answers",
     )
 
     form_item = models.ForeignKey(
-        "form_builder.FormItem", on_delete=models.CASCADE, related_name="answers"
+        "form_builder.FormItem",
+        on_delete=models.CASCADE,
+        related_name="answers",
     )
 
     answer = models.JSONField(

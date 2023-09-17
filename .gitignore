@@ -168,3 +168,6 @@ cython_debug/
 
 frontend/.vite/
 frontend/node_modules/
+
+
+pytest.ini

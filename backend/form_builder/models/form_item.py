@@ -1,28 +1,28 @@
+from tkinter import SINGLE
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from form_builder.models import Form
 from core.models import (
     SoftDeleteModel,
     CreatedAtStampMixin,
     UpdatedAtStampMixin,
 )
-from form_builder.models import Form
 
 
 class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
-
-    RADIOBUTTON = "RB"
-    MULTICHECK = "MC"
-    TEXT = "TX"
+    SINGLE_CHOICE = "single-choice"
+    MULTI_CHOICE = "multi-choice"
+    TEXT = "text"
     ANSWER_TYPE_CHOICES = [
-        (RADIOBUTTON, "Radio button"),
-        (MULTICHECK, "Multi check"),
-        (TEXT, "Text"),
+        (SINGLE_CHOICE, _("Single choice")),
+        (MULTI_CHOICE, _("Multi choice")),
+        (TEXT, _("Text")),
     ]
 
     ANSWER_CONDITION_CHOICES = [
-        (0, "Not Required"),
-        (1, "Required"),
+        (0, _("Not Required")),
+        (1, _("Required")),
     ]
     form = models.ForeignKey(
         Form,
@@ -31,9 +31,9 @@ class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
         on_delete=models.CASCADE,
     )
     answer_type = models.CharField(
-        max_length=2,
         choices=ANSWER_TYPE_CHOICES,
         default=TEXT,
+        max_length=255,
     )
     title = models.CharField(
         verbose_name=_("title"),
@@ -53,7 +53,9 @@ class FormItem(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
     options = models.JSONField(verbose_name=_("options"))
     order = models.PositiveIntegerField(verbose_name=_("order"))
     answer_condition = models.PositiveIntegerField(
-        verbose_name=_("answer condition"), choices=ANSWER_CONDITION_CHOICES, default=0
+        verbose_name=_("answer condition"),
+        choices=ANSWER_CONDITION_CHOICES,
+        default=0,
     )
     time_limit = models.PositiveIntegerField(
         verbose_name=_("time limit"), blank=True, null=True
