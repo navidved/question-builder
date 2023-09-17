@@ -22,7 +22,7 @@ class CreateVisitorView(APIView):
                         "visitor_id": visitor.id,
                     }
                 )
-                return Response(data=visitor_srz.data)
+                return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
             if visitor is None:
                 visitor = srz_data.create(validated_data=srz_data.validated_data)
                 visitor_srz = CreateVisitorSerializer(
@@ -32,5 +32,5 @@ class CreateVisitorView(APIView):
                         "visitor_id": visitor.id,
                     }
                 )
-                return Response(data=visitor_srz.data)
-        return Response(data=srz_data.errors)
+                return Response(data=visitor_srz.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
