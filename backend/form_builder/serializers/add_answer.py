@@ -3,10 +3,12 @@ from form_builder.models import VisitorAnswer
 from form_builder.validators import answer_validator
 
 
-class AddVisitorAnswer(serializers.ModelSerializer):
-
+class AddVisitorAnswerSerializer(serializers.ModelSerializer):
     def validate_answer(self, answer: dict):
-        answer_type_validation = answer_validator(self.context.get('answer_type'), answer)
+        answer_type_validation = answer_validator(
+            self.context.get("answer_type"),
+            answer,
+        )
         if answer_type_validation:
             return answer
         raise serializers.ValidationError("Incorrect Answer")
@@ -14,8 +16,8 @@ class AddVisitorAnswer(serializers.ModelSerializer):
     class Meta:
         model = VisitorAnswer
         fields = [
-            'visitor_id',
-            'form_id',
-            'form_item_id',
-            'answer',
+            "form",
+            "form_item",
+            "visitor",
+            "answer",
         ]

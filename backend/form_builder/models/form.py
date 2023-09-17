@@ -15,9 +15,9 @@ from core.models import (
 
 
 class Form(SoftDeleteModel, CreatedAtStampMixin, UpdatedAtStampMixin):
-    ANONYMOUS = _("anonymous")
-    EMAIL = _("email")
-    PHONE = _("phone")
+    ANONYMOUS = "anonymous"
+    EMAIL = "email"
+    PHONE = "phone"
     AUTH_CHOICES = [
         (ANONYMOUS, _("Anonymous")),
         (EMAIL, _("Email")),
