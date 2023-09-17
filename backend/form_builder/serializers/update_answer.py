@@ -8,13 +8,13 @@ class UpdateAnswerSerializer(serializers.ModelSerializer):
         fields = ["id", "answer"]
 
     def validate_answer(self, value: dict):
-        res = answer_validator(self.context.get("answer_type"), value)
-        if res:
-            return value
+        valid_answer = answer_validator(self.context.get("answer_type"), value)
+        if valid_answer:
+            return valid_answer
         raise serializers.ValidationError("Incorrect Answer")
+        
 
     def update(self, instance: VisitorAnswer, validated_data: dict):
-        # validated_data.pop('answer_type')
         instance.answer = validated_data.get("answer")
         instance.save()
         return instance
