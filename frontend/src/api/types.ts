@@ -1,6 +1,6 @@
 export type QuestionAnswerType = {
   "multi-choice": string[];
-  "radio-button": string;
+  "single-choice": string;
   text: string;
 };
 
@@ -12,7 +12,7 @@ export type VisitorAnswerType = {
 };
 
 export type visitorAuthCheckType = {
-  form: number;
+  form_id: number;
   auth_type: string;
   auth_value: string;
 };

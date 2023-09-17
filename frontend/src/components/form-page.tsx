@@ -29,9 +29,11 @@ export default function FormPage() {
   const [formAuthValue, setFormAuthValue] = useState<string>("");
   const [visitorAnswer, setVisitorAnswer] = useState<QuestionAnswerType>({
     "multi-choice": [],
-    "radio-button": "",
+    "single-choice": "",
     text: "",
   });
+
+  const [authError, setAuthError] = useState<boolean>(false);
 
   const { data: formData, isFetching } = useGetForm(formId);
   const { mutate: checkVisitor, data: visitorAuth } = useCheckVisitorAuth();
@@ -39,12 +41,18 @@ export default function FormPage() {
 
   function handleStart() {
     const visitorCheckData = {
-      form: formData?.id,
+      form_id: formData?.id,
       auth_type: formData?.auth_method,
       auth_value: formAuthValue,
     };
-    setFormItem(0);
-    checkVisitor(visitorCheckData);
+    checkVisitor(visitorCheckData, {
+      onSuccess: () => {
+        setFormItem(0);
+      },
+      onError: () => {
+        setAuthError(true);
+      },
+    });
   }
 
   function handleNext() {
@@ -57,7 +65,7 @@ export default function FormPage() {
         : null,
       answer: visitorAnswer,
     });
-    setVisitorAnswer({ text: "", "radio-button": "", "multi-choice": [] });
+    setVisitorAnswer({ text: "", "single-choice": "", "multi-choice": [] });
   }
 
   function handleSubmit() {
@@ -69,12 +77,12 @@ export default function FormPage() {
         : null,
       answer: visitorAnswer,
     });
-    setVisitorAnswer({ text: "", "radio-button": "", "multi-choice": [] });
+    setVisitorAnswer({ text: "", "single-choice": "", "multi-choice": [] });
     setFormItem((prev) => prev + 1);
   }
 
   function handleAddAnswer(
-    key: "multi-choice" | "radio-button" | "text",
+    key: "multi-choice" | "single-choice" | "text",
     value: string
   ) {
     if (key == "multi-choice") {
@@ -109,6 +117,7 @@ export default function FormPage() {
               <AuthCheck
                 auth_method={auth_method}
                 setFormAuthValue={setFormAuthValue}
+                isError={authError}
               />
             ) : (
               <Box
@@ -124,7 +133,7 @@ export default function FormPage() {
                 <Typography variant="h5">
                   {form_items[formItem].title}
                 </Typography>
-                {form_items[formItem].answer_type == "TX" && (
+                {form_items[formItem].answer_type == "text" && (
                   <>
                     <Typography>{form_items[formItem].description}</Typography>
                     <TextField
@@ -136,7 +145,7 @@ export default function FormPage() {
                     />
                   </>
                 )}
-                {form_items[formItem].answer_type == "MC" && (
+                {form_items[formItem].answer_type == "multi-choice" && (
                   <>
                     <Typography>{form_items[formItem].description}</Typography>
                     <FormGroup>
@@ -162,16 +171,16 @@ export default function FormPage() {
                     </FormGroup>
                   </>
                 )}
-                {form_items[formItem].answer_type == "RB" && (
+                {form_items[formItem].answer_type == "single-choice" && (
                   <>
                     <Typography>{form_items[formItem].description}</Typography>
                     <FormGroup>
                       <RadioGroup
                         onChange={(e) =>
-                          handleAddAnswer("radio-button", e.target.value)
+                          handleAddAnswer("single-choice", e.target.value)
                         }
                       >
-                        {form_items[formItem].options["radio-button"].map(
+                        {form_items[formItem].options["single-choice"].map(
                           (item: string) => (
                             <FormControlLabel
                               control={<Radio />}
