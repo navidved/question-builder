@@ -13,6 +13,7 @@ class VisitorAnswersSerializer(serializers.ModelSerializer):
     class Meta:
         model = VisitorAnswer
         fields = [
+            'id',
             'form_item_id',
             'answer_type',
             'answer',
