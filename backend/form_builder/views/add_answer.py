@@ -17,6 +17,7 @@ class AddAnswerView(APIView):
             form_item_id = request.data["form_item_id"]
             visitor_id = request.data["visitor_id"]
             answer = request.data["answer"]
+            answer_type = request.data["answer_type"]
         except KeyError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -24,24 +25,15 @@ class AddAnswerView(APIView):
         form_item = get_object_or_404(FormItem, id=form_item_id)
         visitor = get_object_or_404(Visitor, id=visitor_id)
 
+        if VisitorAnswer.objects.filter(form_id=form_id, visitor_id=visitor_id, form_item_id=form_item_id).exists():
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
         if form_item.form_id != form.id:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            visitor_answer = VisitorAnswer.objects.create(
-                form=form,
-                form_item=form_item,
-                visitor=visitor,
-                answer=answer,
-            )
-        except IntegrityError:
-            visitor_answer = VisitorAnswer.objects.get(
-                form=form,
-                form_item=form_item,
-                visitor=visitor,
-            )
-            visitor_answer_srz = AddVisitorAnswer(instance=visitor_answer)
-            return Response(status=status.HTTP_200_OK)
-
-        visitor_answer_srz = AddVisitorAnswer(instance=visitor_answer)
+        answer_type = request.data.pop("answer_type")
+        print(request.data)
+        visitor_answer_srz = AddVisitorAnswer(data=request.data, context={"answer_type": answer_type})
+        visitor_answer_srz.is_valid(raise_exception=True)
+        visitor_answer_srz.save()
         return Response(status=status.HTTP_201_CREATED)

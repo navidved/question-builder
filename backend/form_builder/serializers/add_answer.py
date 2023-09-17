@@ -1,16 +1,15 @@
 from rest_framework import serializers
 from form_builder.models import VisitorAnswer
+from form_builder.validators import answer_validator
 
 
 class AddVisitorAnswer(serializers.ModelSerializer):
-    answer_type = serializers.CharField(write_only=True)
 
-    def create(self, validated_data):
-        validated_data.pop('answer_type', None)
-        return super().create(validated_data)
-
-    def validate_answer(self, answer):
-        pass
+    def validate_answer(self, answer: dict):
+        answer_type_validation = answer_validator(self.context.get('answer_type'), answer)
+        if answer_type_validation:
+            return answer
+        raise serializers.ValidationError("Incorrect Answer")
 
     class Meta:
         model = VisitorAnswer
@@ -18,6 +17,5 @@ class AddVisitorAnswer(serializers.ModelSerializer):
             'visitor_id',
             'form_id',
             'form_item_id',
-            'answer_type',
             'answer',
         ]
