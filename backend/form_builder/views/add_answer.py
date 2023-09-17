@@ -7,41 +7,38 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from form_builder.models import Form, FormItem, Visitor, VisitorAnswer
-from form_builder.serializers import AddVisitorAnswer
+from form_builder.serializers import AddVisitorAnswerSerializer
 
 
 class AddAnswerView(APIView):
     def post(self, request: Request):
         try:
-            form_id = request.data["form_id"]
-            form_item_id = request.data["form_item_id"]
-            visitor_id = request.data["visitor_id"]
-            answer = request.data["answer"]
+            data = {
+                "form": request.data["form_id"],
+                "form_item": request.data["form_item_id"],
+                "visitor": request.data["visitor_id"],
+                "answer_type": request.data["answer_type"],
+                "answer": request.data["answer"],
+            }
         except KeyError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        form = get_object_or_404(Form, id=form_id)
-        form_item = get_object_or_404(FormItem, id=form_item_id)
-        visitor = get_object_or_404(Visitor, id=visitor_id)
+        form = get_object_or_404(Form, id=data["form"])
+        form_item = get_object_or_404(FormItem, id=data["form_item"])
+        visitor = get_object_or_404(Visitor, id=data["visitor"])
 
         if form_item.form_id != form.id:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        elif VisitorAnswer.objects.filter(
+            form_id=form, visitor_id=visitor, form_item_id=form_item
+        ).exists():
+            return Response(status=status.HTTP_208_ALREADY_REPORTED)
 
-        try:
-            visitor_answer = VisitorAnswer.objects.create(
-                form=form,
-                form_item=form_item,
-                visitor=visitor,
-                answer=answer,
-            )
-        except IntegrityError:
-            visitor_answer = VisitorAnswer.objects.get(
-                form=form,
-                form_item=form_item,
-                visitor=visitor,
-            )
-            visitor_answer_srz = AddVisitorAnswer(instance=visitor_answer)
-            return Response(status=status.HTTP_200_OK)
-
-        visitor_answer_srz = AddVisitorAnswer(instance=visitor_answer)
+        answer_type = data.pop("answer_type")
+        visitor_answer_srz = AddVisitorAnswerSerializer(
+            data=data,
+            context={"answer_type": answer_type},
+        )
+        visitor_answer_srz.is_valid(raise_exception=True)
+        visitor_answer_srz.save()
         return Response(status=status.HTTP_201_CREATED)

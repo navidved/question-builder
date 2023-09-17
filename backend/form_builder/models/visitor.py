@@ -6,9 +6,9 @@ from form_builder.models import Form
 
 
 class Visitor(CreatedAtStampMixin, UpdatedAtStampMixin, BaseModel):
-    ANONYMOUS = _("anonymous")
-    EMAIL = _("email")
-    PHONE = _("phone")
+    ANONYMOUS = "anonymous"
+    EMAIL = "email"
+    PHONE = "phone"
     AUTHENTICATION_CHOICES = [
         (ANONYMOUS, _("Anonymous")),
         (EMAIL, _("Email")),
