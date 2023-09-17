@@ -3,11 +3,14 @@ from form_builder.models import VisitorAnswer
 
 
 class AddVisitorAnswer(serializers.ModelSerializer):
-    answer_type = serializers.CharField(read_only=True)
+    answer_type = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
         validated_data.pop('answer_type', None)
         return super().create(validated_data)
+
+    def validate_answer(self, answer):
+        pass
 
     class Meta:
         model = VisitorAnswer
