@@ -36,7 +36,7 @@ class VisitorAnswersSerializer2(serializers.ModelSerializer):
         return obj.form_item.id
 
 
-class VisitorAuthSerializer(serializers.Serializer):
+class CreateVisitorSerializer(serializers.Serializer):
     form_id = serializers.IntegerField()
     auth_type = serializers.CharField(write_only=True)
     auth_value = serializers.CharField(write_only=True, allow_blank=True)
