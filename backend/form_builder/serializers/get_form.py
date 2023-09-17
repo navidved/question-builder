@@ -18,7 +18,5 @@ class GetFormSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "time_limit",
-            "category",
-            "tags",
             "form_items",
         ]
