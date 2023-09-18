@@ -29,10 +29,16 @@ class AddAnswerView(APIView):
 
         if form_item.form_id != form.id:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        elif VisitorAnswer.objects.filter(
+        if existed_answer := VisitorAnswer.objects.filter(
             form_id=form, visitor_id=visitor, form_item_id=form_item
-        ).exists():
-            return Response(status=status.HTTP_208_ALREADY_REPORTED)
+        ):
+            answer_type_data = {
+                "id": existed_answer[0].id,
+                "answer_type": data["answer_type"],
+            }
+            return Response(
+                data=answer_type_data, status=status.HTTP_208_ALREADY_REPORTED
+            )
 
         answer_type = data.pop("answer_type")
         visitor_answer_srz = AddVisitorAnswerSerializer(
@@ -40,5 +46,8 @@ class AddAnswerView(APIView):
             context={"answer_type": answer_type},
         )
         visitor_answer_srz.is_valid(raise_exception=True)
-        visitor_answer_srz.save()
-        return Response(status=status.HTTP_201_CREATED)
+        answered_item = visitor_answer_srz.save()
+        return Response(
+            data={"id": answered_item.id, "answer_type": answer_type},
+            status=status.HTTP_201_CREATED,
+        )
