@@ -1,5 +1,9 @@
 import axios from "axios";
-import { VisitorAnswerType, visitorAuthCheckType } from "./types";
+import {
+  UpdatedVisitorAnswerType,
+  VisitorAnswerType,
+  VisitorAuthCheckType,
+} from "./types";
 
 export async function getFormById(formId: string): Promise<any> {
   const { data } = await axios.get(
@@ -9,7 +13,7 @@ export async function getFormById(formId: string): Promise<any> {
 }
 
 export async function checkVisitorAuth(
-  visitorData: visitorAuthCheckType
+  visitorData: VisitorAuthCheckType
 ): Promise<any> {
   const { data } = await axios.post(
     "http://127.0.0.1:8000/api/visitor/auth/",
@@ -24,6 +28,20 @@ export async function createVisitorAnswer(
   const { data } = await axios.post(
     "http://127.0.0.1:8000/api/visitor/answer/create/",
     answerData
+  );
+  return data;
+}
+
+export async function updateVisitorAnswer({
+  newAnswerData,
+  answerId,
+}: {
+  newAnswerData: UpdatedVisitorAnswerType;
+  answerId: string;
+}): Promise<any> {
+  const { data } = await axios.patch(
+    `http://127.0.0.1:8000/api/visitor/answer/update/${answerId}/`,
+    newAnswerData
   );
   return data;
 }

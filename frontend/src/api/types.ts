@@ -13,8 +13,13 @@ export type VisitorAnswerType = {
   answer: QuestionAnswerType;
 };
 
-export type visitorAuthCheckType = {
+export type VisitorAuthCheckType = {
   form_id: number;
   auth_type: string;
   auth_value: string;
+};
+
+export type UpdatedVisitorAnswerType = {
+  answer_type: AnswerKey;
+  answer: QuestionAnswerType;
 };

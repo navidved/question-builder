@@ -11,12 +11,12 @@ import {
   Radio,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { QuestionAnswerType } from "../api/types";
+
 import {
   useCheckVisitorAuth,
   useCreateVisitorAnswer,
   useGetForm,
+  useUpdateVisitorAnswer,
 } from "../api/hooks";
 import { useFormStore } from "../store/formStore";
 import AuthCheck from "./auth-check";
@@ -25,8 +25,6 @@ import { useVisitorAnswerState } from "../store/visitorAnswerStore";
 
 export default function FormPage() {
   let params = useParams();
-
-  // const navigate = useNavigate();
 
   let { formId } = params;
 
@@ -52,6 +50,7 @@ export default function FormPage() {
   const { mutate: checkVisitor, data: visitorAuthResponse } =
     useCheckVisitorAuth();
   const { mutate: createAnswer } = useCreateVisitorAnswer();
+  const { mutate: updateAnswer } = useUpdateVisitorAnswer();
 
   function handleStart() {
     const visitorCheckData = {
@@ -85,39 +84,41 @@ export default function FormPage() {
         : null,
       answer: visitorAnswer,
     };
-    createAnswer(visitorAnswerData, {
-      onSuccess: () => {
-        nextFormItem(formItem);
-        resetVisitorAnswer();
-      },
-      onError: () => {
-        console.log("There is an error");
-      },
-    });
-  }
-  function handlePrevious() {
-    previousFormItem(formItem);
-  }
-
-  function handleSubmit() {
-    createAnswer({
-      visitor_id: visitorAuthResponse ? visitorAuthResponse?.visitor_id : null,
-      form_id: visitorAuthResponse
-        ? visitorAuthResponse?.form_id
-        : formData?.id,
-      form_item_id: formData?.form_items
-        ? formData?.form_items[formItem]?.id
-        : null,
+    const newVisitorAnswerData = {
       answer_type: formData?.form_items
         ? formData?.form_items[formItem]?.answer_type
         : null,
       answer: visitorAnswer,
-    });
-    nextFormItem(formItem);
-    resetVisitorAnswer();
+    };
+    const answerExists = visitorAuthResponse?.visitor_answers.find(
+      (item) => item.form_item_id == form_items[formItem]?.id
+    );
+    answerExists == undefined
+      ? createAnswer(visitorAnswerData, {
+          onSuccess: () => {
+            nextFormItem(formItem);
+            resetVisitorAnswer();
+          },
+          onError: () => {
+            console.log("There is an error");
+          },
+        })
+      : updateAnswer(
+          { newAnswerData: newVisitorAnswerData, answerId: answerExists?.id },
+          {
+            onSuccess: () => {
+              nextFormItem(formItem);
+              resetVisitorAnswer();
+            },
+            onError: () => {
+              console.log("There is an error");
+            },
+          }
+        );
   }
-
-  console.log({ visitorAuthResponse });
+  function handlePrevious() {
+    previousFormItem(formItem);
+  }
 
   if (isFetching) return "Loading...";
   const { form_items, auth_method, title } = formData;
@@ -152,13 +153,11 @@ export default function FormPage() {
                   <>
                     <Typography>{form_items[formItem].description}</Typography>
                     <TextField
-                      onChange={(e) => addVisitorAnswer("text", e.target.value)}
-                      fullWidth
-                      placeholder={
-                        visitorAuthResponse?.answer
-                          ? visitorAuthResponse?.answer[form_items[formItem].id]
-                          : form_items[formItem].options["text"]
+                      onChange={(e) =>
+                        addVisitorAnswer("text", e.target.value, visitorAnswer)
                       }
+                      fullWidth
+                      placeholder={form_items[formItem].options["text"]}
                       multiline
                       rows={4}
                     />
@@ -177,7 +176,8 @@ export default function FormPage() {
                                 onChange={(e) =>
                                   addVisitorAnswer(
                                     "multi-choice",
-                                    e.target.value
+                                    e.target.value,
+                                    visitorAnswer
                                   )
                                 }
                               />
@@ -196,7 +196,11 @@ export default function FormPage() {
                     <FormGroup>
                       <RadioGroup
                         onChange={(e) =>
-                          addVisitorAnswer("single-choice", e.target.value)
+                          addVisitorAnswer(
+                            "single-choice",
+                            e.target.value,
+                            visitorAnswer
+                          )
                         }
                       >
                         {form_items[formItem].options["single-choice"].map(
@@ -214,7 +218,6 @@ export default function FormPage() {
                   </>
                 )}
               </Box>
-              // <Outlet />
             )}
           </Stack>
           <Box
@@ -275,7 +278,7 @@ export default function FormPage() {
                     borderRadius: "12px",
                     fontSize: "20px",
                   }}
-                  onClick={() => handleSubmit()}
+                  onClick={() => handleNext()}
                 >
                   ذخیره سازی و ارسال
                 </Button>
