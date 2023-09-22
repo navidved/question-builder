@@ -3,11 +3,13 @@ export type QuestionAnswerType = {
   "single-choice": string;
   text: string;
 };
+export type AnswerKey = "multi-choice" | "single-choice" | "text";
 
 export type VisitorAnswerType = {
-  visitor: number;
-  form: number;
-  form_item: number;
+  visitor_id: number | null;
+  form_id: number | null;
+  form_item_id: number | null;
+  answer_type: AnswerKey;
   answer: QuestionAnswerType;
 };
 

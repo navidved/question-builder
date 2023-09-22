@@ -1,15 +1,9 @@
 import { Stack, TextField, Typography } from "@mui/material";
+import { useAuthCheckStore } from "../store/authStore";
 
-export default function AuthCheck({
-  auth_method,
-  setFormAuthValue,
-  isError,
-}: 
-{
-  auth_method: string;
-  setFormAuthValue: any;
-  isError: boolean;
-}) {
+export default function AuthCheck({ auth_method }: { auth_method: string }) {
+  const setFormAuthValue = useAuthCheckStore((state) => state.setFormAuthValue);
+  const isError = useAuthCheckStore((state) => state.authError);
   return (
     <>
       {auth_method == "phone" ? (
@@ -19,8 +13,8 @@ export default function AuthCheck({
           </Typography>
           <TextField onChange={(e) => setFormAuthValue(e.target.value)} />
           {isError && (
-            <Typography fontSize={8} color="red" fontWeight={500}>
-              شماره تلفن وارد شده صحیح نیست
+            <Typography fontSize={12} color="red" fontWeight={500}>
+              😜 شماره تلفن وارد شده صحیح نیست
             </Typography>
           )}
         </Stack>
@@ -32,7 +26,7 @@ export default function AuthCheck({
           <TextField onChange={(e) => setFormAuthValue(e.target.value)} />
           {isError && (
             <Typography fontSize={12} color="red" fontWeight={500}>
-              ایمیل وارد شده صحیح نیست
+              😜 ایمیل وارد شده صحیح نیست
             </Typography>
           )}
         </Stack>

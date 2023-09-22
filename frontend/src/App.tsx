@@ -11,6 +11,9 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="/:formId" element={<FormPage />} />
+          {/* <Route index element={<FormPage />} />
+            <Route path="/:formId/:formItem" element={<FormItemPage />} />
+          </Route> */}
           <Route path="dashboard" element={<Dashboard />} />
 
           {/* Using path="*"" means "match anything", so this route

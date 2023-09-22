@@ -12,31 +12,45 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-import AuthCheck from "./auth-check";
 import { QuestionAnswerType } from "../api/types";
 import {
   useCheckVisitorAuth,
   useCreateVisitorAnswer,
   useGetForm,
 } from "../api/hooks";
+import { useFormStore } from "../store/formStore";
+import AuthCheck from "./auth-check";
+import { useAuthCheckStore } from "../store/authStore";
+import { useVisitorAnswerState } from "../store/visitorAnswerStore";
 
 export default function FormPage() {
   let params = useParams();
+
+  // const navigate = useNavigate();
+
   let { formId } = params;
 
   if (formId == undefined) return null;
-  const [formItem, setFormItem] = useState<number>(-1);
-  const [formAuthValue, setFormAuthValue] = useState<string>("");
-  const [visitorAnswer, setVisitorAnswer] = useState<QuestionAnswerType>({
-    "multi-choice": [],
-    "single-choice": "",
-    text: "",
-  });
 
-  const [authError, setAuthError] = useState<boolean>(false);
+  const formItem = useFormStore((state) => state.formItem);
+  const nextFormItem = useFormStore((state) => state.nextFormItem);
+  const previousFormItem = useFormStore((state) => state.previousFormItem);
+  const startForm = useFormStore((state) => state.startForm);
+
+  const formAuthValue = useAuthCheckStore((state) => state.formAuthValue);
+  const setAuthError = useAuthCheckStore((state) => state.setAuthError);
+
+  const visitorAnswer = useVisitorAnswerState((state) => state.visitorAnswer);
+  const resetVisitorAnswer = useVisitorAnswerState(
+    (state) => state.resetVisitorAnswer
+  );
+  const addVisitorAnswer = useVisitorAnswerState(
+    (state) => state.AddVisitorAnswer
+  );
 
   const { data: formData, isFetching } = useGetForm(formId);
-  const { mutate: checkVisitor, data: visitorAuth } = useCheckVisitorAuth();
+  const { mutate: checkVisitor, data: visitorAuthResponse } =
+    useCheckVisitorAuth();
   const { mutate: createAnswer } = useCreateVisitorAnswer();
 
   function handleStart() {
@@ -47,7 +61,9 @@ export default function FormPage() {
     };
     checkVisitor(visitorCheckData, {
       onSuccess: () => {
-        setFormItem(0);
+        startForm();
+
+        // navigate(`${formItem}`);
       },
       onError: () => {
         setAuthError(true);
@@ -56,49 +72,52 @@ export default function FormPage() {
   }
 
   function handleNext() {
-    setFormItem((prev) => prev + 1);
-    createAnswer({
-      visitor: visitorAuth != undefined ? visitorAuth?.visitor?.id : 0,
-      form: formData?.id,
-      form_item: formData?.form_items
+    const visitorAnswerData = {
+      visitor_id: visitorAuthResponse ? visitorAuthResponse?.visitor_id : null,
+      form_id: visitorAuthResponse
+        ? visitorAuthResponse?.form_id
+        : formData?.id,
+      form_item_id: formData?.form_items
         ? formData?.form_items[formItem]?.id
         : null,
+      answer_type: formData?.form_items
+        ? formData?.form_items[formItem]?.answer_type
+        : null,
       answer: visitorAnswer,
+    };
+    createAnswer(visitorAnswerData, {
+      onSuccess: () => {
+        nextFormItem(formItem);
+        resetVisitorAnswer();
+      },
+      onError: () => {
+        console.log("There is an error");
+      },
     });
-    setVisitorAnswer({ text: "", "single-choice": "", "multi-choice": [] });
+  }
+  function handlePrevious() {
+    previousFormItem(formItem);
   }
 
   function handleSubmit() {
     createAnswer({
-      visitor: visitorAuth != undefined ? visitorAuth?.visitor?.id : 0,
-      form: formData?.id,
-      form_item: formData?.form_items
+      visitor_id: visitorAuthResponse ? visitorAuthResponse?.visitor_id : null,
+      form_id: visitorAuthResponse
+        ? visitorAuthResponse?.form_id
+        : formData?.id,
+      form_item_id: formData?.form_items
         ? formData?.form_items[formItem]?.id
+        : null,
+      answer_type: formData?.form_items
+        ? formData?.form_items[formItem]?.answer_type
         : null,
       answer: visitorAnswer,
     });
-    setVisitorAnswer({ text: "", "single-choice": "", "multi-choice": [] });
-    setFormItem((prev) => prev + 1);
+    nextFormItem(formItem);
+    resetVisitorAnswer();
   }
 
-  function handleAddAnswer(
-    key: "multi-choice" | "single-choice" | "text",
-    value: string
-  ) {
-    if (key == "multi-choice") {
-      setVisitorAnswer((prev) => ({
-        ...prev,
-        "multi-choice": prev["multi-choice"].includes(value)
-          ? [...prev["multi-choice"].filter((v) => v != value)]
-          : [...prev["multi-choice"].filter((v) => v != value), value],
-      }));
-    } else {
-      setVisitorAnswer((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
-    }
-  }
+  console.log({ visitorAuthResponse });
 
   if (isFetching) return "Loading...";
   const { form_items, auth_method, title } = formData;
@@ -114,11 +133,7 @@ export default function FormPage() {
           <Stack justifyContent="start" spacing={8} direction="column">
             <Typography variant="h4">{title}</Typography>
             {formItem == -1 ? (
-              <AuthCheck
-                auth_method={auth_method}
-                setFormAuthValue={setFormAuthValue}
-                isError={authError}
-              />
+              <AuthCheck auth_method={auth_method} />
             ) : (
               <Box
                 sx={{
@@ -137,9 +152,13 @@ export default function FormPage() {
                   <>
                     <Typography>{form_items[formItem].description}</Typography>
                     <TextField
-                      onChange={(e) => handleAddAnswer("text", e.target.value)}
+                      onChange={(e) => addVisitorAnswer("text", e.target.value)}
                       fullWidth
-                      placeholder={form_items[formItem].options.text}
+                      placeholder={
+                        visitorAuthResponse?.answer
+                          ? visitorAuthResponse?.answer[form_items[formItem].id]
+                          : form_items[formItem].options["text"]
+                      }
                       multiline
                       rows={4}
                     />
@@ -156,7 +175,7 @@ export default function FormPage() {
                               <Checkbox
                                 name={item}
                                 onChange={(e) =>
-                                  handleAddAnswer(
+                                  addVisitorAnswer(
                                     "multi-choice",
                                     e.target.value
                                   )
@@ -177,7 +196,7 @@ export default function FormPage() {
                     <FormGroup>
                       <RadioGroup
                         onChange={(e) =>
-                          handleAddAnswer("single-choice", e.target.value)
+                          addVisitorAnswer("single-choice", e.target.value)
                         }
                       >
                         {form_items[formItem].options["single-choice"].map(
@@ -195,6 +214,7 @@ export default function FormPage() {
                   </>
                 )}
               </Box>
+              // <Outlet />
             )}
           </Stack>
           <Box
@@ -243,7 +263,7 @@ export default function FormPage() {
                     borderRadius: "12px",
                     fontSize: "20px",
                   }}
-                  onClick={() => setFormItem((prev) => prev - 1)}
+                  onClick={() => handlePrevious()}
                   disabled={formItem == 0}
                 >
                   مرحله قبل

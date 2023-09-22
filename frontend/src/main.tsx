@@ -22,7 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <App />
         </BrowserRouter>
       </ThemeProvider>
-      <ReactQueryDevtools />
+      {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   </React.StrictMode>
 );
