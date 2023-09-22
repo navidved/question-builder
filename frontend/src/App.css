@@ -1,0 +1,35 @@
+:root {
+  --swiper-navigation-size: 10px !important;
+  direction: rtl;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
+  /*direction: 'rtl';*/
+  font-family: "Yekan";
+  /*-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,*/
+  /*  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;*/
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.MuiGrid-container > .MuiDivider-vertical.MuiDivider-flexItem {
+  margin-right: -1px;
+}
+
+@font-face {
+  font-family: "Yekan";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Yekan"), url("./assets/fonts/Yekan.woff") format("woff"),
+    local("Yekan"), url("./assets/fonts/Yekan.eot") format("FontName-opentype"),
+    local("Yekan"), url("./assets/fonts/Yekan.ttf") format("truetype");
+}
