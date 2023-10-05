@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     'django_json_widget',
     'drf_yasg',
     'corsheaders',
+    'admin_argon.apps.AdminArgonConfig',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -76,7 +77,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,6 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

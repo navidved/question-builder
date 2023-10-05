@@ -42,3 +42,5 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 ]
+
+urlpatterns += [path('', include('admin_argon.urls'))]
